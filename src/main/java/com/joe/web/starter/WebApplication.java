@@ -1,7 +1,7 @@
 package com.joe.web.starter;
 
 import com.joe.utils.common.StringUtils;
-import com.joe.web.starter.core.DocumentRootHelper;
+import com.joe.utils.ext.DocumentRootHelper;
 import com.joe.web.starter.core.config.JerseyConfig;
 import com.joe.web.starter.core.ext.JerseySpringBeanScannerConfigurer;
 import com.joe.web.starter.core.filter.CorsControllerFilter;
