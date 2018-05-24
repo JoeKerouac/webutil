@@ -168,6 +168,10 @@ public class WebApplication {
             log.warn("用户指定doc-root[{}]不存在，使用默认doc-root[{}]", docRootStr, Const.DEFAULT_DOC_ROOT);
             docRoot = new File(Const.DEFAULT_DOC_ROOT);
         }
+        if (!docRoot.exists()) {
+            log.warn("当前是以jar运行的，用户指定doc-root失效");
+            docRoot = null;
+        }
         return docRoot;
     }
 
