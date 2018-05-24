@@ -23,7 +23,7 @@ import java.util.List;
  * @version 2018.02.02 10:33
  */
 @Slf4j
-@ComponentScan("com.joe.logistics")
+@ComponentScan("com.joe.web.starter")
 @EnableAutoConfiguration
 public class WebApplication {
     private static SysProp sysProp;
