@@ -1,7 +1,7 @@
 package com.joe.web.starter;
 
 import com.joe.utils.common.StringUtils;
-import com.joe.web.starter.core.Const;
+import com.joe.web.starter.core.DocumentRootHelper;
 import com.joe.web.starter.core.config.JerseyConfig;
 import com.joe.web.starter.core.ext.JerseySpringBeanScannerConfigurer;
 import com.joe.web.starter.core.filter.CorsControllerFilter;
@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -136,43 +135,8 @@ public class WebApplication {
             throw new RuntimeException("没有合适的嵌入式web容器，请添加至少一种嵌入式web容器");
         }
         //设置doc root，默认spring-boot好像找不到
-        factory.setDocumentRoot(getDocRoot(sysProp.getDocRoot()));
+        factory.setDocumentRoot(DocumentRootHelper.getValidDocumentRoot());
         return (EmbeddedServletContainerFactory) factory;
-    }
-
-    /**
-     * 根据用户输入doc-root查找实际的doc-root
-     *
-     * @param docRootStr 用户输入doc-root
-     * @return doc-rootfile
-     */
-    private static File getDocRoot(String docRootStr) {
-        String path;
-        if (docRootStr.startsWith(Const.CLASSPATH_PREFIX)) {
-            try {
-                path = docRootStr.substring(Const.CLASSPATH_PREFIX.length());
-                path = StringUtils.trim(path, "/");
-                path = Thread.currentThread().getContextClassLoader().getResource(path).getFile();
-            } catch (Throwable e) {
-                log.warn("用户指定doc-root[{}]不存在，使用默认doc-root[{}]", docRootStr, Const.DEFAULT_DOC_ROOT);
-                path = Const.DEFAULT_DOC_ROOT;
-            }
-        } else if (docRootStr.startsWith(Const.FILE_PREFIX)) {
-            path = docRootStr.substring(Const.FILE_PREFIX.length());
-        } else {
-            log.warn("用户指定doc-root[{}]不符合规则，使用默认doc-root[{}]", docRootStr, Const.DEFAULT_DOC_ROOT);
-            path = Const.DEFAULT_DOC_ROOT;
-        }
-        File docRoot = new File(path);
-        if (!docRoot.exists()) {
-            log.warn("用户指定doc-root[{}]不存在，使用默认doc-root[{}]", docRootStr, Const.DEFAULT_DOC_ROOT);
-            docRoot = new File(Const.DEFAULT_DOC_ROOT);
-        }
-        if (!docRoot.exists()) {
-            log.warn("当前是以jar运行的，用户指定doc-root失效");
-            docRoot = null;
-        }
-        return docRoot;
     }
 
     /**

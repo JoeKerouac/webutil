@@ -1,6 +1,5 @@
 package com.joe.web.starter.core.prop;
 
-import com.joe.web.starter.core.Const;
 import com.joe.web.starter.core.spi.SecureContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -91,12 +90,6 @@ public class SysProp {
     @Getter
     @Setter
     private ConfigurableEmbeddedServletContainer configurableEmbeddedServletContainer;
-    /**
-     * web项目的docRoot（当需要有静态资源和jsp文件等时可以设置该路径，支持classpath和file协议，默认是classpath的根目录）
-     */
-    @Getter
-    @Setter
-    private String docRoot = Const.CLASSPATH_PREFIX;
     /**
      * 安全上下文，如果要启动权限拦截那么需要通过enableAuthentication方法设置该值，并且需要启用jersey
      */
