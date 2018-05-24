@@ -134,7 +134,7 @@ public class WebApplication {
         if (factory == null) {
             throw new RuntimeException("没有合适的嵌入式web容器，请添加至少一种嵌入式web容器");
         }
-        //设置doc root，默认spring-boot好像找不到
+        //设置doc root，spring-boot只能在打包后找到，在IDE中直接运行时找不到
         factory.setDocumentRoot(DocumentRootHelper.getValidDocumentRoot());
         return (EmbeddedServletContainerFactory) factory;
     }
