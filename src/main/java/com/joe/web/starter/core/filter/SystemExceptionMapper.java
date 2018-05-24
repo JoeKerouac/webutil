@@ -1,6 +1,6 @@
 package com.joe.web.starter.core.filter;
 
-import com.joe.web.starter.core.dto.BaseDTO;
+import com.joe.utils.data.BaseDTO;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.core.MediaType;
