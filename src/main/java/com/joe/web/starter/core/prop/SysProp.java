@@ -98,7 +98,7 @@ public class SysProp {
     /**
      * spring系统配置
      */
-    private Properties properties;
+    private final Properties properties;
 
 
     public SysProp() {
@@ -134,6 +134,14 @@ public class SysProp {
             throw new IllegalArgumentException("端口号不能小于等于0");
         }
         properties.put("server.port", port);
+    }
+
+    /**
+     * 设置允许动态动态加载JSP,开启动态加载时JSP更改后服务器不用重启即可看到更改内容，但是会带来性能问题，导致性能下
+     * 降，生产环境不建议开启，默认关闭
+     */
+    public void allowJspReload() {
+        properties.put("server.jsp-servlet.init-parameters.development", true);
     }
 
     /**
