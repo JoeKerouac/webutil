@@ -39,6 +39,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jersey</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.JoeKerouac</groupId>

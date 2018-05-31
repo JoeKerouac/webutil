@@ -37,11 +37,11 @@ public class SysProp {
     @Setter
     private String springScan;
     /**
-     * 是否禁用jersey（禁用jersey后使用springMVC），true表示禁用
+     * 是否禁用jersey（禁用jersey后使用springMVC），true表示禁用，默认禁用，如果启用jersey请添加spring-boot-starter-jersey依赖
      */
     @Getter
     @Setter
-    private boolean disableJersey = false;
+    private boolean disableJersey = true;
     /**
      * 是否允许跨域，默认不允许，只有在disableJersey等于false时生效
      */
