@@ -6,6 +6,7 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,12 +16,14 @@ import java.util.List;
  * @version 2018.02.02 17:46
  */
 public class ScanConfig {
-    public static List<Class<? extends Annotation>> JERSEY_COMPONENT = new ArrayList<>();
+    public static final List<Class<? extends Annotation>> JERSEY_COMPONENT;
 
     static {
-        JERSEY_COMPONENT.add(Path.class);
-        JERSEY_COMPONENT.add(PreMatching.class);
-        JERSEY_COMPONENT.add(Priority.class);
-        JERSEY_COMPONENT.add(Provider.class);
+        List<Class<? extends Annotation>> temp = new ArrayList<>();
+        temp.add(Path.class);
+        temp.add(PreMatching.class);
+        temp.add(Priority.class);
+        temp.add(Provider.class);
+        JERSEY_COMPONENT = Collections.unmodifiableList(temp);
     }
 }
