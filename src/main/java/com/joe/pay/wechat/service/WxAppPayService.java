@@ -40,9 +40,9 @@ public class WxAppPayService implements PayService {
 
     public static void main(String[] args) {
         WxAppPayService service = new WxAppPayService();
-        service.init("" , "" , "");
+        service.init("", "", "");
         PayParam payParam = service.build();
-        service.request(payParam, "https://api.mch.weixin.qq.com/pay/unifiedorder");
+        service.request(payParam, "https://api.mch.weixin.qq.com/pay/unifiedorder", null);
     }
 
     public void init(String appid, String mchId, String key) {
@@ -69,7 +69,16 @@ public class WxAppPayService implements PayService {
         return payParam;
     }
 
-    private void request(PayParam param, String url) {
+    /**
+     * 发送请求
+     *
+     * @param param        请求参数
+     * @param url          请求地址
+     * @param responseType 响应结果类型Class
+     * @param <T>          响应结果实际类型
+     * @return 响应结果
+     */
+    private <T> T request(PayParam param, String url, Class<T> responseType) {
         log.debug("将数据[{}]转换为map数据", param);
         Map<String, Object> map = BeanUtils.convert(param, XmlNode.class, false);
         log.debug("数据[{}]转换的map数据为[{}]", param, map);
@@ -85,9 +94,12 @@ public class WxAppPayService implements PayService {
 
         try {
             String xmlResponse = CLIENT.executePost(url, data);
-            System.out.println("响应是：" + xmlResponse);
+            log.debug("响应数据：[{}]", xmlResponse);
+            T t = XML_PARSER.parse(xmlResponse, responseType);
+            return t;
         } catch (Throwable e) {
-
+            log.error("请求数据[{}]，url：[{}]请求异常", data, e);
+            return null;
         }
     }
 }
