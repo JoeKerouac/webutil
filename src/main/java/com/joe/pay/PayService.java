@@ -7,4 +7,5 @@ package com.joe.pay;
  * @version 2018.06.29 11:32
  */
 public interface PayService {
+
 }

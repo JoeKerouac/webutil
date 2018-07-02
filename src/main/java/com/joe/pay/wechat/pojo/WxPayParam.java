@@ -10,24 +10,7 @@ import lombok.Data;
  * @version 2018.06.29 11:34
  */
 @Data
-public class WxPayParam {
-    /**
-     * 微信开放平台审核通过的应用APPID
-     * <p>
-     * 必填
-     * <p>
-     * 类型：String(32)
-     */
-    private String appid;
-    /**
-     * 微信支付分配的商户号
-     * <p>
-     * 必填
-     * <p>
-     * 类型：String(32)
-     */
-    @XmlNode(name = "mch_id")
-    private String mchId;
+public class WxPayParam extends WxPublicParam {
     /**
      * 终端设备号(门店号或收银设备ID)，默认请传"WEB"
      * <p>
@@ -37,32 +20,6 @@ public class WxPayParam {
      */
     @XmlNode(name = "device_info")
     private String deviceInfo = "WEB";
-    /**
-     * 随机字符串，不长于32位。推荐随机数生成算法
-     * <p>
-     * 必填
-     * <p>
-     * 类型：String(32)
-     */
-    @XmlNode(name = "nonce_str")
-    private String nonceStr;
-    /**
-     * 签名
-     * <p>
-     * 必填
-     * <p>
-     * 类型：String(32)
-     */
-    private String sign;
-    /**
-     * 签名类型，目前支持HMAC-SHA256和MD5，默认为MD5
-     * <p>
-     * 非必填
-     * <p>
-     * 类型：String(32)
-     */
-    @XmlNode(name = "sign_type")
-    private String signType = "MD5";
     /**
      * 商品描述交易字段格式根据不同的应用场景按照以下格式：
      * <p>

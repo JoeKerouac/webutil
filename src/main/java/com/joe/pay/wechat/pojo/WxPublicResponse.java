@@ -44,7 +44,7 @@ public class WxPublicResponse {
     /**
      * 微信返回的随机字符串
      */
-    @XmlNode(name = "nonceStr")
+    @XmlNode(name = "nonce_str")
     private String nonceStr;
     /**
      * 微信返回的签名

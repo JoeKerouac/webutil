@@ -2,7 +2,12 @@ package com.joe.pay.wechat.service;
 
 import com.joe.http.IHttpClientUtil;
 import com.joe.pay.PayService;
+import com.joe.pay.exception.CheckSignException;
+import com.joe.pay.exception.PayException;
 import com.joe.pay.wechat.pojo.WxPayParam;
+import com.joe.pay.wechat.pojo.WxPayResponse;
+import com.joe.pay.wechat.pojo.WxPublicParam;
+import com.joe.pay.wechat.pojo.WxPublicResponse;
 import com.joe.utils.common.BeanUtils;
 import com.joe.utils.common.FormDataBuilder;
 import com.joe.utils.common.StringUtils;
@@ -42,7 +47,10 @@ public class WxAppPayService implements PayService {
         WxAppPayService service = new WxAppPayService();
         service.init("", "", "");
         WxPayParam payParam = service.build();
-        service.request(payParam, "https://api.mch.weixin.qq.com/pay/unifiedorder", null);
+        WxPayResponse response = service.request(payParam, "https://api.mch.weixin.qq.com/pay/unifiedorder",
+                WxPayResponse.class);
+        System.out.println("结果是：" + response);
+
     }
 
     public void init(String appid, String mchId, String key) {
@@ -70,16 +78,65 @@ public class WxAppPayService implements PayService {
     }
 
     /**
-     * 发送请求
+     * 发送微信请求
      *
      * @param param        请求参数
      * @param url          请求地址
      * @param responseType 响应结果类型Class
-     * @param <T>          响应结果实际类型
-     * @return 响应结果
+     * @param <R>          响应结果实际类型
+     * @param <P>          请求参数的实际类型
+     * @return 响应结果，当响应结果签名校验异常的时候抛出签名校验异常
      */
-    private <T> T request(WxPayParam param, String url, Class<T> responseType) {
-        log.debug("将数据[{}]转换为map数据", param);
+    private <R extends WxPublicResponse, P extends WxPublicParam> R request(P param, String url, Class<R>
+            responseType) {
+        Map<String, Object> map = sign(param);
+
+        String data = XML_PARSER.toXml(map, "xml", true);
+        log.debug("待发送数据为[{}]", data);
+        try {
+            String xmlResponse = CLIENT.executePost(url, data);
+            log.debug("响应数据：[{}]", xmlResponse);
+            R result = XML_PARSER.parse(xmlResponse, responseType);
+            if (!checkSign(result)) {
+                throw new CheckSignException("请求结果签名校验异常");
+            }
+            return result;
+        } catch (PayException e) {
+            log.error("请求数据[{}]，url：[{}]对应的响应签名校验异常", data, url, e);
+            throw e;
+        } catch (Throwable e) {
+            log.error("请求数据[{}]，url：[{}]请求异常", data, url, e);
+            return null;
+        }
+    }
+
+    /**
+     * 校验结果签名
+     *
+     * @param result 微信请求结果
+     * @param <R>    结果实际类型
+     * @return 校验签名结果，true表示签名校验通过
+     */
+    private <R extends WxPublicResponse> boolean checkSign(R result) {
+        Map<String, Object> map = sign(result);
+        String sysSign = String.valueOf(map.get("sign"));
+        String resultSign = result.getSign();
+        if (sysSign.equals(resultSign)) {
+            return true;
+        } else {
+            log.warn("系统签名为：[{}]；响应签名为：[{}]，签名不一致", sysSign, resultSign);
+            return false;
+        }
+    }
+
+    /**
+     * 签名并返回
+     *
+     * @param param 要签名的数据
+     * @return 将要签名的数据转换为Map并返回，其中包含sign字段
+     */
+    private Map<String, Object> sign(Object param) {
+        log.debug("将数据[{}]转换为待签名的map数据", param);
         Map<String, Object> map = BeanUtils.convert(param, XmlNode.class, false);
         log.debug("数据[{}]转换的map数据为[{}]", param, map);
         map.remove("sign");
@@ -89,17 +146,6 @@ public class WxAppPayService implements PayService {
         String sign = MD_5.encrypt(signData).toUpperCase();
         log.debug("签名为：[{}]", sign);
         map.put("sign", sign);
-        String data = XML_PARSER.toXml(map, "xml", true);
-        log.debug("待发送数据为[{}]", data);
-
-        try {
-            String xmlResponse = CLIENT.executePost(url, data);
-            log.debug("响应数据：[{}]", xmlResponse);
-            T t = XML_PARSER.parse(xmlResponse, responseType);
-            return t;
-        } catch (Throwable e) {
-            log.error("请求数据[{}]，url：[{}]请求异常", data, e);
-            return null;
-        }
+        return map;
     }
 }

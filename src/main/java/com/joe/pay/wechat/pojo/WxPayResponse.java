@@ -2,6 +2,7 @@ package com.joe.pay.wechat.pojo;
 
 import com.joe.utils.parse.xml.XmlNode;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * 微信支付响应
@@ -10,6 +11,7 @@ import lombok.Data;
  * @version 2018.06.29 17:53
  */
 @Data
+@ToString(callSuper = true)
 public class WxPayResponse extends WxPublicResponse {
     /*-----------------以下字段在return_code 和result_code都为SUCCESS的时候有返回-----------------*/
     /**
