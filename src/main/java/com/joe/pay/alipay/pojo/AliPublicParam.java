@@ -12,7 +12,7 @@ import java.nio.charset.Charset;
  * @version 2018.06.28 14:42
  */
 @Data
-public class PublicParam {
+public class AliPublicParam {
     /**
      * 支付宝分配给开发者的应用ID
      * <p>

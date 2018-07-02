@@ -2,7 +2,7 @@ package com.joe.pay.wechat.service;
 
 import com.joe.http.IHttpClientUtil;
 import com.joe.pay.PayService;
-import com.joe.pay.wechat.pojo.PayParam;
+import com.joe.pay.wechat.pojo.WxPayParam;
 import com.joe.utils.common.BeanUtils;
 import com.joe.utils.common.FormDataBuilder;
 import com.joe.utils.common.StringUtils;
@@ -41,7 +41,7 @@ public class WxAppPayService implements PayService {
     public static void main(String[] args) {
         WxAppPayService service = new WxAppPayService();
         service.init("", "", "");
-        PayParam payParam = service.build();
+        WxPayParam payParam = service.build();
         service.request(payParam, "https://api.mch.weixin.qq.com/pay/unifiedorder", null);
     }
 
@@ -55,8 +55,8 @@ public class WxAppPayService implements PayService {
         this.key = key;
     }
 
-    private PayParam build() {
-        PayParam payParam = new PayParam();
+    private WxPayParam build() {
+        WxPayParam payParam = new WxPayParam();
         payParam.setAppid(appid);
         payParam.setMchId(mchId);
         payParam.setNonceStr(Tools.createRandomStr(30));
@@ -78,7 +78,7 @@ public class WxAppPayService implements PayService {
      * @param <T>          响应结果实际类型
      * @return 响应结果
      */
-    private <T> T request(PayParam param, String url, Class<T> responseType) {
+    private <T> T request(WxPayParam param, String url, Class<T> responseType) {
         log.debug("将数据[{}]转换为map数据", param);
         Map<String, Object> map = BeanUtils.convert(param, XmlNode.class, false);
         log.debug("数据[{}]转换的map数据为[{}]", param, map);

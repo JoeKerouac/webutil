@@ -3,9 +3,9 @@ package com.joe.pay.alipay.service;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.joe.http.IHttpClientUtil;
 import com.joe.pay.PayService;
-import com.joe.pay.alipay.pojo.PublicResponse;
+import com.joe.pay.alipay.pojo.AliPublicResponse;
 import com.joe.pay.alipay.pojo.BizContent;
-import com.joe.pay.alipay.pojo.PublicParam;
+import com.joe.pay.alipay.pojo.AliPublicParam;
 import com.joe.utils.common.BeanUtils;
 import com.joe.utils.common.FormDataBuilder;
 import com.joe.utils.common.StringUtils;
@@ -56,7 +56,7 @@ public class AlipayService implements PayService {
      * @param <T>     响应类型
      * @return 响应，请求异常时返回null
      */
-    private <T extends PublicResponse> T request(PublicParam param, BizContent content, Class<T> type) {
+    private <T extends AliPublicResponse> T request(AliPublicParam param, BizContent content, Class<T> type) {
         log.debug("发起请求，公共参数为[{}]，业务参数为[{}]", param, content);
         param.setBizContent(JSON_PARSER.toJson(content));
 
@@ -91,7 +91,7 @@ public class AlipayService implements PayService {
      * @param param 要签名的参数
      * @return 签名
      */
-    public String sign(PublicParam param) {
+    public String sign(AliPublicParam param) {
         TreeMap<String, String> map = JSON_PARSER.readAsMap(JSON_PARSER.toJson(param, true), TreeMap.class,
                 String.class, String.class);
         String formData = FormDataBuilder.builder(map).data();

@@ -10,7 +10,7 @@ import lombok.Data;
  * @version 2018.06.29 11:34
  */
 @Data
-public class PayParam {
+public class WxPayParam {
     /**
      * 微信开放平台审核通过的应用APPID
      * <p>

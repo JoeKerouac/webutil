@@ -10,7 +10,7 @@ import lombok.Data;
  * @version 2018.06.29 11:10
  */
 @Data
-public class PublicResponse {
+public class AliPublicResponse {
     private String code;
     private String msg;
     @JsonProperty("sub_code")
