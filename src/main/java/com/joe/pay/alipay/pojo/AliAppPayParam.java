@@ -2,6 +2,9 @@ package com.joe.pay.alipay.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.Pattern;
 
 /**
  * app支付请求业务参数
@@ -26,6 +29,7 @@ public class AliAppPayParam implements BizContent {
      * <p>
      * 最大长度：256
      */
+    @NotEmpty(message = "订单标题不能为空")
     private String subject;
     /**
      * 商户网站唯一订单号
@@ -34,15 +38,17 @@ public class AliAppPayParam implements BizContent {
      * <p>
      * 最大长度：64
      */
+    @NotEmpty(message = "商户订单号不能为空")
     @JsonProperty("out_trade_no")
     private String outTradeNo;
     /**
      * 该笔订单允许的最晚付款时间，逾期将关闭交易。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天（1c-当天的情况下，无论交易何时创建，都在0点关闭）。 该参数数值不接受小数点， 如 1.5h，可转换为 90m。
      * <p>
-     * 可选
+     * 必填（官方给出的是选填）
      * <p>
      * 最大长度：6
      */
+    @Pattern(regexp = "(((1[0-5]d)?|([0-9]d)?)(.h)?(.m)?)|1c", message = "订单最晚付款时间不符合规则")
     @JsonProperty("timeout_express")
     private String timeoutExpress;
     /**
@@ -52,6 +58,7 @@ public class AliAppPayParam implements BizContent {
      * <p>
      * 最大长度：9
      */
+    @Pattern(regexp = "(([1-9][0-9]*)|0)(\\.[0-1]{1,2})?", message = "订单金额不符合规范")
     @JsonProperty("total_amount")
     private String totalAmount;
     /**
@@ -62,7 +69,7 @@ public class AliAppPayParam implements BizContent {
      * 最大长度：64
      */
     @JsonProperty("product_code")
-    private String productCode = "QUICK_MSECURITY_PAY";
+    private final String productCode = "QUICK_MSECURITY_PAY";
     /**
      * 商品主类型 :0-虚拟类商品,1-实物类商品
      * <p>
