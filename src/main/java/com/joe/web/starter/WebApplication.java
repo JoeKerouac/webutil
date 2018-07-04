@@ -1,6 +1,5 @@
 package com.joe.web.starter;
 
-import com.joe.utils.common.StringUtils;
 import com.joe.utils.ext.DocumentRootHelper;
 import com.joe.web.starter.core.config.JerseyConfig;
 import com.joe.web.starter.core.ext.JerseySpringBeanScannerConfigurer;
@@ -47,6 +46,16 @@ public class WebApplication {
         embeddedServletContainerClass[2] = UndertowEmbeddedServletContainerFactory.class;
     }
 
+    /**
+     * 运行web程序（依赖：需要一个名叫Statistics的logger用来打印统计信息）
+     *
+     * @param source 用户主类
+     * @param args   参数
+     * @return ConfigurableApplicationContext
+     */
+    public static ConfigurableApplicationContext runWeb(Object source, String[] args) {
+        return runWeb(source, null, args);
+    }
 
     /**
      * 运行web程序（依赖：需要一个名叫Statistics的logger用来打印统计信息）
@@ -70,15 +79,7 @@ public class WebApplication {
         if (WebApplication.sysProp == null) {
             WebApplication.sysProp = new SysProp();
             log.warn("配置文件为null，使用默认配置文件：[{}]", WebApplication.sysProp);
-        } else {
-            //检查配置文件
-            checkProp(WebApplication.sysProp);
         }
-
-        if (!StringUtils.isEmpty(WebApplication.sysProp.getSpringScan())) {
-            sources.add(WebApplication.sysProp.getSpringScan());
-        }
-
 
         if (!WebApplication.sysProp.isDisableJersey()) {
             log.info("启用jersey");
@@ -109,8 +110,8 @@ public class WebApplication {
     }
 
     @Bean
-    public SysProp sysProp() {
-        return WebApplication.sysProp;
+    SysProp sysProp() {
+        return this.sysProp;
     }
 
     /**
@@ -119,7 +120,7 @@ public class WebApplication {
      * @return 嵌入式web容器工厂
      */
     @Bean
-    public EmbeddedServletContainerFactory embeddedServletContainerFactory(SysProp sysProp) {
+    EmbeddedServletContainerFactory embeddedServletContainerFactory(SysProp sysProp) {
         ConfigurableEmbeddedServletContainer factory = sysProp.getConfigurableEmbeddedServletContainer();
         if (factory == null) {
             for (Class<? extends ConfigurableEmbeddedServletContainer> clazz : embeddedServletContainerClass) {
@@ -137,17 +138,5 @@ public class WebApplication {
         //设置doc root，spring-boot只能在打包后找到，在IDE中直接运行时找不到
         factory.setDocumentRoot(DocumentRootHelper.getValidDocumentRoot());
         return (EmbeddedServletContainerFactory) factory;
-    }
-
-    /**
-     * 检查配置
-     *
-     * @param prop 系统配置
-     */
-    private static void checkProp(SysProp prop) {
-        if (StringUtils.isEmpty(prop.getJerseyScan())) {
-            log.error("jersey scan不能为空");
-            throw new IllegalArgumentException("jersey scan不能为空");
-        }
     }
 }
