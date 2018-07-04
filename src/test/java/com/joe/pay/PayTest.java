@@ -1,6 +1,6 @@
 package com.joe.pay;
 
-import com.joe.pay.alipay.service.AlipayService;
+import com.joe.pay.alipay.service.AliPayService;
 import com.joe.pay.pojo.PayParam;
 import com.joe.pay.pojo.PayProp;
 import com.joe.pay.pojo.PayResponse;
@@ -61,7 +61,7 @@ public class PayTest {
                 "9QKBgHfd3hhLWjO4zh99B+PRYFgpnJa9S5E1zzoejZVIJhK5q60KLV5n/HMxuHTGRZxpbfcH4/44d3Yz7ieccmCiPtqxFYUwP" +
                 "W0JukNWDL2tOzTSZ5ABAwqorV3bM67mLUSt0O5dL4YtSBJ2J3F6joO1fTZEcUCybO/A5J4wTZDOV1AR");
         aliProp.setNotifyUrl("http://baidu.com");
-        aliPayService = new AlipayService();
+        aliPayService = new AliPayService();
         aliPayService.init(aliProp);
     }
 
