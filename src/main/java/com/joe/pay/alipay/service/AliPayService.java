@@ -31,7 +31,7 @@ import java.util.Map;
  * @version 2018.06.28 15:10
  */
 @Slf4j
-public class AlipayService implements PayService {
+public class AliPayService implements PayService {
     private static final JsonParser JSON_PARSER = JsonParser.getInstance();
     private static final IHttpClientUtil CLIENT = new IHttpClientUtil();
     private RSA rsa;
