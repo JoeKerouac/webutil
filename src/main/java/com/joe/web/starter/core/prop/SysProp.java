@@ -31,12 +31,6 @@ public class SysProp {
     @Setter
     private String root = "/";
     /**
-     * spring扫描包名
-     */
-    @Getter
-    @Setter
-    private String springScan;
-    /**
      * 是否禁用jersey（禁用jersey后使用springMVC），true表示禁用，默认禁用，如果启用jersey请添加spring-boot-starter-jersey依赖
      */
     @Getter
