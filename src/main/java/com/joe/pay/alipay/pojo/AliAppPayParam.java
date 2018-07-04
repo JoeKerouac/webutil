@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 /**
  * app支付请求业务参数
@@ -48,7 +49,9 @@ public class AliAppPayParam implements BizContent {
      * <p>
      * 最大长度：6
      */
-    @Pattern(regexp = "(((1[0-5]d)?|([0-9]d)?)(.h)?(.m)?)|1c", message = "订单最晚付款时间不符合规则")
+    @Pattern(regexp = "(((1[0-5]d)?|([1-9]d)?)(([1-9]\\d+h)?|([1-9]h)?)(([1-9]\\d+m)?|([1-9]m)?))|1c",
+            message = "订单最晚付款时间不符合规则")
+    @Size(max = 6)
     @JsonProperty("timeout_express")
     private String timeoutExpress;
     /**
@@ -58,7 +61,7 @@ public class AliAppPayParam implements BizContent {
      * <p>
      * 最大长度：9
      */
-    @Pattern(regexp = "(([1-9][0-9]*)|0)(\\.[0-1]{1,2})?", message = "订单金额不符合规范")
+    @Pattern(regexp = "(([1-9]\\d*)|0)(\\.[0-1]{1,2})?", message = "订单金额不符合规范")
     @JsonProperty("total_amount")
     private String totalAmount;
     /**
