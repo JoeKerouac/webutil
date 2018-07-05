@@ -29,6 +29,9 @@ public class PayServiceFactory {
         }
 
         PayProp.PayMode mode = prop.getMode();
+        if (mode == null) {
+            throw new IllegalArgumentException("支付模式mode不能为空");
+        }
         synchronized (mode) {
             if ((service = CACHE.get(prop)) != null) {
                 return service;

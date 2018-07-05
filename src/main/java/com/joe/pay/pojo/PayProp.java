@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * 支付配置
  *
@@ -35,11 +37,13 @@ public final class PayProp {
     /**
      * 支付模式
      */
+    @NotNull(message = "支付模式不能为空")
     private PayMode mode;
     /**
      * 环境信息
      */
-    private Environment environment;
+    @NotNull(message = "支付环境不能为空")
+    private Environment environment = Environment.PROD;
 
     /**
      * 支付模式（后缀SANDBOX的为沙箱模式）

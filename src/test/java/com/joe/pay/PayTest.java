@@ -31,15 +31,16 @@ public class PayTest {
     public void init() {
         //配置微信支付，需要将下列参数替换为自己的参数
         wxProp = new PayProp();
-        wxProp.setAppid("");
-        wxProp.setKey("");
-        wxProp.setMchId("");
+        wxProp.setAppid("123123123");
+        wxProp.setKey("123123123");
+        wxProp.setMchId("123123123");
         wxProp.setNotifyUrl("http://baidu.com");
+        wxProp.setMode(PayProp.PayMode.WECHAT);
         wxPayService = PayServiceFactory.getInstance(wxProp);
 
         //配置支付宝支付，需要将下列参数替换为自己的参数
         aliProp = new PayProp();
-        aliProp.setAppid("");
+        aliProp.setAppid("123");
         aliProp.setKey("MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDEuQvaAad8+PAUVLeh9tqNsWNDCiAXEal4krM0E1" +
                 "4oHiUvzOT8Xf5BYZeMmiA+G+Z4iT2dP6bNRBIth7W5COh41v8TDf4dYxqV3Jw7jyQF2K/p74izFXm96yDXz3cMotRdDW3JdcC" +
                 "ME2tgrlSjJxN26qPCrHh+OL9Y/yqJGhsAHKlaIYQ4S8F9B3rIPMAv6MbTuHFrFXkwuJqesupTwUqzmPgriy/2Au9ZApnpVCex" +
@@ -58,6 +59,7 @@ public class PayTest {
                 "9QKBgHfd3hhLWjO4zh99B+PRYFgpnJa9S5E1zzoejZVIJhK5q60KLV5n/HMxuHTGRZxpbfcH4/44d3Yz7ieccmCiPtqxFYUwP" +
                 "W0JukNWDL2tOzTSZ5ABAwqorV3bM67mLUSt0O5dL4YtSBJ2J3F6joO1fTZEcUCybO/A5J4wTZDOV1AR");
         aliProp.setNotifyUrl("http://baidu.com");
+        aliProp.setMode(PayProp.PayMode.ALIAPP);
         aliPayService = PayServiceFactory.getInstance(aliProp);
     }
 
