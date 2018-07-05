@@ -2,25 +2,20 @@ package com.joe.pay.alipay.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.joe.pay.AbstractPayService;
-import com.joe.pay.PayConst;
-import com.joe.pay.alipay.pojo.AliAppPayParam;
-import com.joe.pay.alipay.pojo.AliPublicParam;
-import com.joe.pay.alipay.pojo.AliPublicResponse;
-import com.joe.pay.alipay.pojo.BizContent;
-import com.joe.pay.pojo.PayParam;
-import com.joe.pay.pojo.PayProp;
-import com.joe.pay.pojo.PayResponse;
-import com.joe.pay.pojo.SysResponse;
-import com.joe.utils.common.BeanUtils;
-import com.joe.utils.common.DateUtil;
-import com.joe.utils.common.FormDataBuilder;
-import com.joe.utils.common.Tools;
+import com.joe.pay.alipay.pojo.*;
+import com.joe.pay.pojo.*;
+import com.joe.pay.pojo.prop.PayProp;
+import com.joe.utils.collection.CollectionUtil;
+import com.joe.utils.common.*;
 import com.joe.utils.parse.json.JsonParser;
 import com.joe.utils.secure.RSA;
+import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Map;
 
+import static com.joe.pay.PayConst.*;
 import static com.joe.utils.validator.ValidatorUtil.validate;
 
 /**
@@ -56,7 +51,7 @@ public class AliPayService extends AbstractPayService {
         this.privateKey = prop.getKey();
         this.rsa = new RSA(privateKey, RSA.RSAType.SHA256WithRSA);
         this.notifyUrl = prop.getNotifyUrl();
-        this.gateway = PayConst.ALI_GATEWAY;
+        this.gateway = ALI_GATEWAY;
     }
 
     @Override
@@ -64,12 +59,12 @@ public class AliPayService extends AbstractPayService {
         if (sandbox) {
             throw new IllegalArgumentException("当前支付宝支付暂时不支持沙箱模式");
         } else {
-            this.gateway = PayConst.ALI_GATEWAY;
+            this.gateway = ALI_GATEWAY;
         }
     }
 
     @Override
-    public PayResponse pay(PayParam param) {
+    public PayResponse pay(PayRequest param) {
         AliAppPayParam aliAppPayParam = new AliAppPayParam();
         aliAppPayParam.setBody(param.getBody());
         aliAppPayParam.setSubject(param.getSubject());
@@ -78,40 +73,78 @@ public class AliPayService extends AbstractPayService {
         aliAppPayParam.setTotalAmount(Tools.dealDouble(param.getTotalAmount() / 100.0));
         aliAppPayParam.setPassbackParams(param.getAttach());
 
-        return pay(aliAppPayParam);
+        String data = pay(aliAppPayParam);
+        PayResponse response = new PayResponse();
+        response.setCode("SUCCESS");
+        response.setInfo(data);
+        log.info("阿里订单请求[{}]结果：[{}]", param, response);
+        return response;
+    }
+
+    @Override
+    public RefundResponse refund(RefundRequest request) {
+        log.debug("收到阿里支付退款订单：[{}]", request);
+        AliRefundParam param = new AliRefundParam();
+        param.setTradeNo(request.getOrderId());
+        param.setOutTradeNo(request.getOutTradeNo());
+        param.setOutRequestNo(request.getOutRefundNo());
+        param.setRefundAmount(Tools.dealDouble(request.getRefundFee() / 1.0));
+        param.setRefundReason(request.getRefundDesc());
+        SysResponse<AliRefundResponse> sysResponse = refund(param, null);
+        log.debug("阿里支付退款订单退款结果：[{}]", sysResponse);
+
+
+        return null;
     }
 
     /**
-     * 发起订单（生成订单信息，如果{@link #pay(PayParam) pay}方法不能满足外部系统那么可以调用该方法）
+     * 订单退款
+     *
+     * @param param           退款详情
+     * @param goodsDetailList 退款商品列表，可以为空
+     */
+    public SysResponse<AliRefundResponse> refund(AliRefundParam param, List<AliRefundParam.GoodsDetail> goodsDetailList) {
+        log.debug("阿里退款请求:[{}]:[{}]", param, goodsDetailList);
+        validate(param);
+        if (StringUtils.isEmptyAll(param.getOutTradeNo(), param.getTradeNo())) {
+            throw new IllegalArgumentException("商户订单号和支付宝交易号不能同时为空");
+        }
+
+        if (!CollectionUtil.safeIsEmpty(goodsDetailList)) {
+            goodsDetailList.parallelStream().forEach(ValidatorUtil::validate);
+            param.setGoodsDetail(JSON_PARSER.toJson(goodsDetailList));
+        }
+
+        SysResponse<AliRefundResponse> sysResponse = request(param, ALI_REFUND_METHOD, AliRefundResponse.class);
+        return sysResponse;
+    }
+
+    /**
+     * 发起订单（生成订单信息，如果{@link #pay(PayRequest) pay}方法不能满足外部系统那么可以调用该方法）
      *
      * @param payParam 阿里订单
      * @return 结果
      */
-    public PayResponse pay(AliAppPayParam payParam) {
+    public String pay(AliAppPayParam payParam) {
         log.debug("阿里订单请求[{}]", payParam);
         validate(payParam);
 
-        AliPublicParam publicParam = buildPublicParam();
+        AliPublicParam publicParam = buildPublicParam(ALI_PAY_METHOD);
         publicParam.setBizContent(JSON_PARSER.toJson(payParam));
         Map<String, Object> map = sign(publicParam);
-        String data = JSON_PARSER.toJson(map);
-
-        PayResponse response = new PayResponse();
-        response.setCode("SUCCESS");
-        response.setInfo(data);
-        log.info("阿里订单请求[{}]结果：[{}]", publicParam, response);
-        return response;
+        return JSON_PARSER.toJson(map);
     }
 
     /**
      * 构建支付宝请求公共参数
      *
+     * @param method 请求接口名
      * @return 支付宝请求公共参数
      */
-    private AliPublicParam buildPublicParam() {
+    private AliPublicParam buildPublicParam(String method) {
         AliPublicParam publicParam = new AliPublicParam();
         publicParam.setAppId(appid);
-        publicParam.setMethod("alipay.trade.app.pay");
+        publicParam.setMethod(method);
         publicParam.setFormat("JSON");
         publicParam.setTimestamp(DateUtil.getFormatDate(DateUtil.BASE));
         publicParam.setNotifyUrl(notifyUrl);
@@ -122,13 +155,14 @@ public class AliPayService extends AbstractPayService {
      * 发起请求
      *
      * @param content 业务参数
+     * @param method  请求接口
      * @param type    响应类型class
      * @param <T>     响应类型
      * @return 响应，请求异常时返回null
      */
-    private <T extends AliPublicResponse> SysResponse<T> request(BizContent content, Class<T> type) {
+    private <T extends AliPublicResponse> SysResponse<T> request(BizContent content, String method, Class<T> type) {
         log.debug("发起支付宝请求，业务参数为[{}]", content);
-        AliPublicParam param = buildPublicParam();
+        AliPublicParam param = buildPublicParam(method);
         param.setBizContent(JSON_PARSER.toJson(content));
 
         //签名

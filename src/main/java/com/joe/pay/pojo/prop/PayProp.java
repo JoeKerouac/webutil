@@ -1,4 +1,4 @@
-package com.joe.pay.pojo;
+package com.joe.pay.pojo.prop;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

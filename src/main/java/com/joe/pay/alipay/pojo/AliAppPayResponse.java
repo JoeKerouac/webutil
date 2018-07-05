@@ -10,7 +10,7 @@ import lombok.Data;
  * @version 2018.06.29 11:18
  */
 @Data
-public class AppPayResponse extends AliPublicResponse {
+public class AliAppPayResponse extends AliPublicResponse {
     /**
      * 商户网站唯一订单号
      */

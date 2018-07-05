@@ -1,7 +1,7 @@
 package com.joe.pay;
 
-import com.joe.pay.pojo.PayParam;
-import com.joe.pay.pojo.PayProp;
+import com.joe.pay.pojo.PayRequest;
+import com.joe.pay.pojo.prop.PayProp;
 import com.joe.pay.pojo.PayResponse;
 import com.joe.utils.common.DateUtil;
 import com.joe.utils.common.Tools;
@@ -71,7 +71,7 @@ public class PayTest {
      */
     @Test
     public void doWxPay() {
-        PayParam param = build();
+        PayRequest param = build();
         PayResponse response = wxPayService.pay(param);
         Assert.assertEquals("SUCCESS", response.getCode());
     }
@@ -81,7 +81,7 @@ public class PayTest {
      */
     @Test
     public void doAliPay() {
-        PayParam param = build();
+        PayRequest param = build();
         PayResponse response = aliPayService.pay(param);
         Assert.assertEquals("SUCCESS", response.getCode());
     }
@@ -91,14 +91,14 @@ public class PayTest {
      *
      * @return 订单
      */
-    private PayParam build() {
-        PayParam payParam = new PayParam();
-        payParam.setOutTradeNo(Tools.createUUID());
-        payParam.setBody("天天爱消除-游戏充值");
-        payParam.setSubject("天天爱消除-游戏充值");
-        payParam.setCreateTime(DateUtil.getFormatDate(DateUtil.BASE));
-        payParam.setTotalAmount(100 * 10);
-        payParam.setIp("106.120.141.226");
-        return payParam;
+    private PayRequest build() {
+        PayRequest payRequest = new PayRequest();
+        payRequest.setOutTradeNo(Tools.createUUID());
+        payRequest.setBody("天天爱消除-游戏充值");
+        payRequest.setSubject("天天爱消除-游戏充值");
+        payRequest.setCreateTime(DateUtil.getFormatDate(DateUtil.BASE));
+        payRequest.setTotalAmount(100 * 10);
+        payRequest.setIp("106.120.141.226");
+        return payRequest;
     }
 }

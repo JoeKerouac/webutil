@@ -1,7 +1,7 @@
 package com.joe.pay;
 
 import com.joe.pay.alipay.service.AliPayService;
-import com.joe.pay.pojo.PayProp;
+import com.joe.pay.pojo.prop.PayProp;
 import com.joe.pay.wechat.service.WxPayService;
 
 import java.util.HashMap;

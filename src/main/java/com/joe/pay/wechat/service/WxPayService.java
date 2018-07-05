@@ -1,13 +1,10 @@
 package com.joe.pay.wechat.service;
 
 import com.joe.pay.AbstractPayService;
-import com.joe.pay.PayConst;
 import com.joe.pay.exception.CheckSignException;
 import com.joe.pay.exception.PayException;
-import com.joe.pay.pojo.PayParam;
-import com.joe.pay.pojo.PayProp;
-import com.joe.pay.pojo.PayResponse;
-import com.joe.pay.pojo.SysResponse;
+import com.joe.pay.pojo.*;
+import com.joe.pay.pojo.prop.PayProp;
 import com.joe.pay.wechat.pojo.WxPayParam;
 import com.joe.pay.wechat.pojo.WxPayResponse;
 import com.joe.pay.wechat.pojo.WxPublicParam;
@@ -18,6 +15,8 @@ import com.joe.utils.parse.xml.XmlParser;
 import com.joe.utils.secure.MD5;
 import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.joe.pay.PayConst.*;
 
 import java.util.Map;
 
@@ -47,7 +46,6 @@ public class WxPayService extends AbstractPayService {
      * 支付异步回调通知地址
      */
     private String notifyUrl;
-
     /**
      * 支付URL
      */
@@ -65,7 +63,7 @@ public class WxPayService extends AbstractPayService {
                 StringUtils.replaceAfter(key, key.length() - 5, "******"),
                 notifyUrl);
 
-        this.payUrl = PayConst.WX_PAY_URL;
+        this.payUrl = WX_GATEWAY + WX_PAY_METHOD;
     }
 
     @Override
@@ -73,12 +71,12 @@ public class WxPayService extends AbstractPayService {
         if (sandbox) {
             throw new IllegalArgumentException("当前支付宝支付暂时不支持沙箱模式");
         } else {
-            this.payUrl = PayConst.WX_PAY_URL;
+            this.payUrl = WX_GATEWAY + WX_PAY_METHOD;
         }
     }
 
     @Override
-    public PayResponse pay(PayParam param) {
+    public PayResponse pay(PayRequest param) {
         log.debug("调用微信支付，支付参数为：[{}]", param);
         WxPayParam wxPayParam = new WxPayParam();
         wxPayParam.setBody(param.getSubject());
@@ -95,19 +93,8 @@ public class WxPayService extends AbstractPayService {
         wxPayParam.setAttach(param.getAttach());
 
         log.debug("系统订单[{}]转换为了微信订单：[{}]", param, wxPayParam);
-        return pay(wxPayParam);
-    }
+        SysResponse<WxPayResponse> sysResponse = pay(wxPayParam);
 
-    /**
-     * 使用微信订单发起支付（如果{@link #pay(PayParam) pay}方法不能满足外部系统需求，那么可以使用该方法发起支付）
-     *
-     * @param param 微信订单
-     * @return 支付结果
-     */
-    public PayResponse pay(WxPayParam param) {
-        log.debug("发起微信支付，支付参数为：[{}]", param);
-        ValidatorUtil.validate(param);
-        SysResponse<WxPayResponse> sysResponse = request(param, payUrl, WxPayResponse.class);
         log.info("微信支付参数[{}]对应的响应为：[{}]", param, sysResponse);
         PayResponse response = new PayResponse();
 
@@ -137,6 +124,23 @@ public class WxPayService extends AbstractPayService {
         }
         log.info("订单[{}]对应的微信支付结果为：[{}]", param, response);
         return response;
+    }
+
+    @Override
+    public RefundResponse refund(RefundRequest request) {
+        return null;
+    }
+
+    /**
+     * 使用微信订单发起支付（如果{@link #pay(PayRequest) pay}方法不能满足外部系统需求，那么可以使用该方法发起支付）
+     *
+     * @param param 微信订单
+     * @return 支付结果
+     */
+    public SysResponse<WxPayResponse> pay(WxPayParam param) {
+        log.debug("发起微信支付，支付参数为：[{}]", param);
+        ValidatorUtil.validate(param);
+        return request(param, payUrl, WxPayResponse.class);
     }
 
     /**

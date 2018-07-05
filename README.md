@@ -282,8 +282,8 @@ public class SysProp {
 ```java
 package com.joe.pay;
 
-import com.joe.pay.pojo.PayParam;
-import com.joe.pay.pojo.PayProp;
+import com.joe.pay.pojo.PayRequest;
+import com.joe.pay.pojo.prop.PayProp;
 import com.joe.pay.pojo.PayResponse;
 
 /**
@@ -306,8 +306,8 @@ public interface PayService {
 ```java
 package com.joe.pay;
 
-import com.joe.pay.pojo.PayParam;
-import com.joe.pay.pojo.PayProp;
+import com.joe.pay.pojo.PayRequest;
+import com.joe.pay.pojo.prop.PayProp;
 import com.joe.pay.pojo.PayResponse;
 import com.joe.utils.common.DateUtil;
 import com.joe.utils.common.Tools;
@@ -398,14 +398,14 @@ public class PayTest {
      * @return 订单
      */
     private PayParam build() {
-        PayParam payParam = new PayParam();
-        payParam.setOutTradeNo(Tools.createUUID());
-        payParam.setBody("天天爱消除-游戏充值");
-        payParam.setSubject("天天爱消除-游戏充值");
-        payParam.setCreateTime(DateUtil.getFormatDate(DateUtil.BASE));
-        payParam.setTotalAmount(100 * 10);
-        payParam.setIp("106.120.141.226");
-        return payParam;
+        PayParam payRequest = new PayParam();
+        payRequest.setOutTradeNo(Tools.createUUID());
+        payRequest.setBody("天天爱消除-游戏充值");
+        payRequest.setSubject("天天爱消除-游戏充值");
+        payRequest.setCreateTime(DateUtil.getFormatDate(DateUtil.BASE));
+        payRequest.setTotalAmount(100 * 10);
+        payRequest.setIp("106.120.141.226");
+        return payRequest;
     }
 }
 ```

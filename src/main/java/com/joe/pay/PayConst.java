@@ -12,8 +12,18 @@ public class PayConst {
      */
     public static final String ALI_GATEWAY = "https://openapi.alipay.com/gateway.do";
     /**
-     * 微信统一下单URL
+     * 微信网关
      */
-    public static final String WX_PAY_URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+    public static final String WX_GATEWAY = "https://api.mch.weixin.qq.com/pay/";
+    /**
+     * 阿里下单method
+     */
+    public static final String ALI_PAY_METHOD = "alipay.trade.app.pay";
+    /**
+     * 微信下单method
+     */
+    public static final String WX_PAY_METHOD = "unifiedorder";
+    public static final String ALI_REFUND_METHOD = "alipay.trade.refund";
+    public static final String WX_REFUND_METHOD = "unifiedorder";
 
 }
