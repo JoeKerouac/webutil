@@ -9,7 +9,7 @@ import lombok.Data;
  * @version 2018.07.02 10:36
  */
 @Data
-public class PayParam {
+public class PayParam implements Request{
     /**
      * 商户网站唯一订单号
      */

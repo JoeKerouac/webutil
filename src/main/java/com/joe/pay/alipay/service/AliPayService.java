@@ -1,9 +1,8 @@
 package com.joe.pay.alipay.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.joe.http.IHttpClientUtil;
+import com.joe.pay.AbstractPayService;
 import com.joe.pay.PayConst;
-import com.joe.pay.PayService;
 import com.joe.pay.alipay.pojo.AliAppPayParam;
 import com.joe.pay.alipay.pojo.AliPublicParam;
 import com.joe.pay.alipay.pojo.AliPublicResponse;
@@ -11,18 +10,18 @@ import com.joe.pay.alipay.pojo.BizContent;
 import com.joe.pay.pojo.PayParam;
 import com.joe.pay.pojo.PayProp;
 import com.joe.pay.pojo.PayResponse;
+import com.joe.pay.pojo.SysResponse;
 import com.joe.utils.common.BeanUtils;
 import com.joe.utils.common.DateUtil;
 import com.joe.utils.common.FormDataBuilder;
 import com.joe.utils.common.Tools;
 import com.joe.utils.parse.json.JsonParser;
 import com.joe.utils.secure.RSA;
-
-import static com.joe.utils.validator.ValidatorUtil.*;
-
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
+
+import static com.joe.utils.validator.ValidatorUtil.validate;
 
 /**
  * 阿里支付服务
@@ -31,9 +30,8 @@ import java.util.Map;
  * @version 2018.06.28 15:10
  */
 @Slf4j
-public class AliPayService implements PayService {
+public class AliPayService extends AbstractPayService {
     private static final JsonParser JSON_PARSER = JsonParser.getInstance();
-    private static final IHttpClientUtil CLIENT = new IHttpClientUtil();
     private RSA rsa;
     /**
      * 支付宝appid
@@ -47,14 +45,27 @@ public class AliPayService implements PayService {
      * 回调URL
      */
     private String notifyUrl;
+    /**
+     * 支付宝网关
+     */
+    private String gateway;
 
-    @Override
-    public void init(PayProp prop) {
-        validate(prop);
+    public AliPayService(PayProp prop) {
+        super(prop);
         this.appid = prop.getAppid();
         this.privateKey = prop.getKey();
         this.rsa = new RSA(privateKey, RSA.RSAType.SHA256WithRSA);
         this.notifyUrl = prop.getNotifyUrl();
+        this.gateway = PayConst.ALI_GATEWAY;
+    }
+
+    @Override
+    public void useSandbox(boolean sandbox) {
+        if (sandbox) {
+            throw new IllegalArgumentException("当前支付宝支付暂时不支持沙箱模式");
+        } else {
+            this.gateway = PayConst.ALI_GATEWAY;
+        }
     }
 
     @Override
@@ -115,7 +126,7 @@ public class AliPayService implements PayService {
      * @param <T>     响应类型
      * @return 响应，请求异常时返回null
      */
-    private <T extends AliPublicResponse, P extends AliPublicParam> T request(BizContent content, Class<T> type) {
+    private <T extends AliPublicResponse> SysResponse<T> request(BizContent content, Class<T> type) {
         log.debug("发起支付宝请求，业务参数为[{}]", content);
         AliPublicParam param = buildPublicParam();
         param.setBizContent(JSON_PARSER.toJson(content));
@@ -126,13 +137,13 @@ public class AliPayService implements PayService {
         String data = JSON_PARSER.toJson(map);
         log.debug("要发送的数据为：[{}]", data);
         try {
-            String result = CLIENT.executePost(PayConst.ALI_GATEWAY, data);
+            String result = CLIENT.executePost(gateway, data);
             log.debug("请求数据[{}]的请求结果为：[{}]", result);
             T t = JSON_PARSER.readAsObject(result, type);
-            return t;
+            return SysResponse.buildSuccess(t);
         } catch (Throwable e) {
-            log.error("请求[{}]数据[{}]请求失败", PayConst.ALI_GATEWAY, data, e);
-            return null;
+            log.error("请求[{}]数据[{}]请求失败", gateway, data, e);
+            return SysResponse.buildError(e);
         }
     }
 

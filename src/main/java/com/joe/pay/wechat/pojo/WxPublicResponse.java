@@ -1,5 +1,6 @@
 package com.joe.pay.wechat.pojo;
 
+import com.joe.pay.pojo.Response;
 import com.joe.utils.parse.xml.XmlNode;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import lombok.Data;
  * @version 2018.07.02 09:59
  */
 @Data
-public class WxPublicResponse {
+public class WxPublicResponse implements Response {
     /**
      * SUCCESS/FAIL
      * <p>

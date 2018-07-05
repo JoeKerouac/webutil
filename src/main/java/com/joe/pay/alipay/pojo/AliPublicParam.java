@@ -1,6 +1,7 @@
 package com.joe.pay.alipay.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.joe.pay.pojo.Request;
 import lombok.Data;
 
 import java.nio.charset.Charset;
@@ -12,7 +13,7 @@ import java.nio.charset.Charset;
  * @version 2018.06.28 14:42
  */
 @Data
-public class AliPublicParam {
+public class AliPublicParam implements Request {
     /**
      * 支付宝分配给开发者的应用ID
      * <p>

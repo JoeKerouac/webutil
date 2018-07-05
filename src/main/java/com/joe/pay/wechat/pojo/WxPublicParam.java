@@ -1,5 +1,6 @@
 package com.joe.pay.wechat.pojo;
 
+import com.joe.pay.pojo.Request;
 import com.joe.utils.parse.xml.XmlNode;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import lombok.Data;
  * @version 2018.07.02 10:52
  */
 @Data
-public class WxPublicParam {
+public class WxPublicParam implements Request{
     /**
      * 微信开放平台审核通过的应用APPID
      * <p>

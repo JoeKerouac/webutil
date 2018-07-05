@@ -1,10 +1,8 @@
 package com.joe.pay;
 
-import com.joe.pay.alipay.service.AliPayService;
 import com.joe.pay.pojo.PayParam;
 import com.joe.pay.pojo.PayProp;
 import com.joe.pay.pojo.PayResponse;
-import com.joe.pay.wechat.service.WxPayService;
 import com.joe.utils.common.DateUtil;
 import com.joe.utils.common.Tools;
 import org.junit.Assert;
@@ -37,8 +35,7 @@ public class PayTest {
         wxProp.setKey("");
         wxProp.setMchId("");
         wxProp.setNotifyUrl("http://baidu.com");
-        wxPayService = new WxPayService();
-        wxPayService.init(wxProp);
+        wxPayService = PayServiceFactory.getInstance(wxProp);
 
         //配置支付宝支付，需要将下列参数替换为自己的参数
         aliProp = new PayProp();
@@ -61,8 +58,7 @@ public class PayTest {
                 "9QKBgHfd3hhLWjO4zh99B+PRYFgpnJa9S5E1zzoejZVIJhK5q60KLV5n/HMxuHTGRZxpbfcH4/44d3Yz7ieccmCiPtqxFYUwP" +
                 "W0JukNWDL2tOzTSZ5ABAwqorV3bM67mLUSt0O5dL4YtSBJ2J3F6joO1fTZEcUCybO/A5J4wTZDOV1AR");
         aliProp.setNotifyUrl("http://baidu.com");
-        aliPayService = new AliPayService();
-        aliPayService.init(aliProp);
+        aliPayService = PayServiceFactory.getInstance(aliProp);
     }
 
     /**
@@ -72,7 +68,7 @@ public class PayTest {
     public void doWxPay() {
         PayParam param = build();
         PayResponse response = wxPayService.pay(param);
-        Assert.assertEquals("SUCCESS" , response.getCode());
+        Assert.assertEquals("SUCCESS", response.getCode());
     }
 
     /**
@@ -82,13 +78,13 @@ public class PayTest {
     public void doAliPay() {
         PayParam param = build();
         PayResponse response = aliPayService.pay(param);
-        Assert.assertEquals("SUCCESS" , response.getCode());
+        Assert.assertEquals("SUCCESS", response.getCode());
     }
 
     /**
      * 构建一个订单
-     * @return
-     * 订单
+     *
+     * @return 订单
      */
     private PayParam build() {
         PayParam payParam = new PayParam();

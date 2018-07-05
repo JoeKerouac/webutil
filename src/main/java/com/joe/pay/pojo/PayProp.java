@@ -1,6 +1,7 @@
 package com.joe.pay.pojo;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
@@ -10,7 +11,8 @@ import org.hibernate.validator.constraints.NotEmpty;
  * @version 2018.07.02 14:31
  */
 @Data
-public class PayProp {
+@EqualsAndHashCode
+public final class PayProp {
     /**
      * appid
      */
@@ -30,4 +32,26 @@ public class PayProp {
      */
     @NotEmpty(message = "notifyUrl不能为空")
     private String notifyUrl;
+    /**
+     * 支付模式
+     */
+    private PayMode mode;
+    /**
+     * 环境信息
+     */
+    private Environment environment;
+
+    /**
+     * 支付模式（后缀SANDBOX的为沙箱模式）
+     */
+    public enum PayMode {
+        ALIAPP, WECHAT
+    }
+
+    /**
+     * 环境信息，PROD表示生产，SANDBOX表示沙箱，如果对应的支付服务支持沙箱模式那么会进入沙箱模式
+     */
+    public enum Environment {
+        PROD, SANDBOX
+    }
 }

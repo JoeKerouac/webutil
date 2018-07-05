@@ -1,13 +1,13 @@
 package com.joe.pay.wechat.service;
 
-import com.joe.http.IHttpClientUtil;
+import com.joe.pay.AbstractPayService;
 import com.joe.pay.PayConst;
-import com.joe.pay.PayService;
 import com.joe.pay.exception.CheckSignException;
 import com.joe.pay.exception.PayException;
 import com.joe.pay.pojo.PayParam;
 import com.joe.pay.pojo.PayProp;
 import com.joe.pay.pojo.PayResponse;
+import com.joe.pay.pojo.SysResponse;
 import com.joe.pay.wechat.pojo.WxPayParam;
 import com.joe.pay.wechat.pojo.WxPayResponse;
 import com.joe.pay.wechat.pojo.WxPublicParam;
@@ -16,6 +16,7 @@ import com.joe.utils.common.*;
 import com.joe.utils.parse.xml.XmlNode;
 import com.joe.utils.parse.xml.XmlParser;
 import com.joe.utils.secure.MD5;
+import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -27,8 +28,7 @@ import java.util.Map;
  * @version 2018.06.29 11:31
  */
 @Slf4j
-public class WxPayService implements PayService {
-    private static final IHttpClientUtil CLIENT = new IHttpClientUtil();
+public class WxPayService extends AbstractPayService {
     private static final XmlParser XML_PARSER = XmlParser.getInstance();
     private static final MD5 MD_5 = new MD5();
     /**
@@ -48,8 +48,13 @@ public class WxPayService implements PayService {
      */
     private String notifyUrl;
 
-    @Override
-    public void init(PayProp prop) {
+    /**
+     * 支付URL
+     */
+    private String payUrl;
+
+    public WxPayService(PayProp prop) {
+        super(prop);
         this.appid = prop.getAppid();
         this.mchId = prop.getMchId();
         this.key = prop.getKey();
@@ -59,6 +64,17 @@ public class WxPayService implements PayService {
                 StringUtils.replaceAfter(mchId, mchId.length() - 5, "******"),
                 StringUtils.replaceAfter(key, key.length() - 5, "******"),
                 notifyUrl);
+
+        this.payUrl = PayConst.WX_PAY_URL;
+    }
+
+    @Override
+    public void useSandbox(boolean sandbox) {
+        if (sandbox) {
+            throw new IllegalArgumentException("当前支付宝支付暂时不支持沙箱模式");
+        } else {
+            this.payUrl = PayConst.WX_PAY_URL;
+        }
     }
 
     @Override
@@ -70,7 +86,7 @@ public class WxPayService implements PayService {
         wxPayParam.setOutTradeNo(param.getOutTradeNo());
         wxPayParam.setTotalFee(param.getTotalAmount());
         wxPayParam.setSpbillCreateIp(param.getIp());
-        wxPayParam.setTimeStart(param.getCreateTime().replaceAll("-", "").replace(" ", "").replace(":" , ""));
+        wxPayParam.setTimeStart(param.getCreateTime().replaceAll("-", "").replace(" ", "").replace(":", ""));
         wxPayParam.setTimeExpire(DateUtil.getFormatDate("yyyyMMddHHmmss", DateUtil.add(DateUtil.DateUnit.SECOND, param
                 .getExpire(), param.getCreateTime(), DateUtil.BASE)));
         wxPayParam.setNotifyUrl(notifyUrl);
@@ -89,9 +105,21 @@ public class WxPayService implements PayService {
      * @return 支付结果
      */
     public PayResponse pay(WxPayParam param) {
-        WxPayResponse wxPayResponse = request(param, PayConst.WX_PAY_URL, WxPayResponse
-                .class);
+        log.debug("发起微信支付，支付参数为：[{}]", param);
+        ValidatorUtil.validate(param);
+        SysResponse<WxPayResponse> sysResponse = request(param, payUrl, WxPayResponse.class);
+        log.info("微信支付参数[{}]对应的响应为：[{}]", param, sysResponse);
         PayResponse response = new PayResponse();
+
+        if (!sysResponse.isSuccess()) {
+            response.setCode("EXCEPTION");
+            response.setErrCode(sysResponse.getError().getMessage());
+            response.setErrMsg(sysResponse.getError().toString());
+            return response;
+        }
+
+        WxPayResponse wxPayResponse = sysResponse.getData();
+
         if (isSuccess(wxPayResponse)) {
             log.debug("订单[{}]对应的微信支付成功", param);
             response.setCode("SUCCESS");
@@ -121,7 +149,7 @@ public class WxPayService implements PayService {
      * @param <P>          请求参数的实际类型
      * @return 响应结果，当响应结果签名校验异常的时候抛出签名校验异常
      */
-    private <R extends WxPublicResponse, P extends WxPublicParam> R request(P param, String url, Class<R>
+    private <R extends WxPublicResponse, P extends WxPublicParam> SysResponse<R> request(P param, String url, Class<R>
             responseType) {
         log.debug("设置微信请求[{}]的商家信息", param);
         param.setAppid(appid);
@@ -138,13 +166,13 @@ public class WxPayService implements PayService {
             if (!checkSign(result)) {
                 throw new CheckSignException("请求结果签名校验异常");
             }
-            return result;
+            return SysResponse.buildSuccess(result);
         } catch (PayException e) {
             log.error("请求数据[{}]，url：[{}]对应的响应签名校验异常", data, url, e);
             throw e;
         } catch (Throwable e) {
             log.error("请求数据[{}]，url：[{}]请求异常", data, url, e);
-            return null;
+            return SysResponse.buildError(e);
         }
     }
 

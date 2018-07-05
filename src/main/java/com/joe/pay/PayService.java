@@ -12,13 +12,6 @@ import com.joe.pay.pojo.PayResponse;
  */
 public interface PayService {
     /**
-     * 初始化服务，调用功能前必须先初始化
-     *
-     * @param prop 初始化参数
-     */
-    void init(PayProp prop);
-
-    /**
      * 调用第三方支付
      *
      * @param param 支付参数
