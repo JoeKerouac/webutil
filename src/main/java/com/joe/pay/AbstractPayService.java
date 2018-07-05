@@ -26,6 +26,7 @@ public abstract class AbstractPayService implements PayService {
             throw new IllegalArgumentException("当前支付模式是微信支付，请提供微信商户ID");
         }
         PayProp.Environment environment = prop.getEnvironment();
+        environment = environment == null ? PayProp.Environment.PROD : environment;
         switch (environment) {
             case PROD:
                 this.sandbox = false;

@@ -1,5 +1,7 @@
 package com.joe.pay.pojo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -14,36 +16,37 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @EqualsAndHashCode
+@AllArgsConstructor
+@Builder
 public final class PayProp {
     /**
      * appid
      */
     @NotEmpty(message = "appid不能为空")
-    private String appid;
+    private final String appid;
     /**
      * 商户ID（微信支付有）
      */
-    private String mchId;
+    private final String mchId;
     /**
      * 商户平台设置的密钥key
      */
     @NotEmpty(message = "key不能为空")
-    private String key;
+    private final String key;
     /**
      * 支付异步回调通知地址
      */
     @NotEmpty(message = "notifyUrl不能为空")
-    private String notifyUrl;
+    private final String notifyUrl;
     /**
      * 支付模式
      */
     @NotNull(message = "支付模式不能为空")
-    private PayMode mode;
+    private final PayMode mode;
     /**
-     * 环境信息
+     * 环境信息，为空时默认使用PROD
      */
-    @NotNull(message = "支付环境不能为空")
-    private Environment environment = Environment.PROD;
+    private final Environment environment;
 
     /**
      * 支付模式（后缀SANDBOX的为沙箱模式）
