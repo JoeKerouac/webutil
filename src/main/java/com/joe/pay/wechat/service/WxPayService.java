@@ -5,10 +5,7 @@ import com.joe.pay.exception.CheckSignException;
 import com.joe.pay.exception.PayException;
 import com.joe.pay.pojo.*;
 import com.joe.pay.pojo.prop.PayProp;
-import com.joe.pay.wechat.pojo.WxPayParam;
-import com.joe.pay.wechat.pojo.WxPayResponse;
-import com.joe.pay.wechat.pojo.WxPublicParam;
-import com.joe.pay.wechat.pojo.WxPublicResponse;
+import com.joe.pay.wechat.pojo.*;
 import com.joe.utils.common.*;
 import com.joe.utils.parse.xml.XmlNode;
 import com.joe.utils.parse.xml.XmlParser;
@@ -17,8 +14,10 @@ import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.joe.pay.PayConst.*;
+import static com.joe.utils.validator.ValidatorUtil.validate;
 
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * 微信支付服务，文档：https://pay.weixin.qq.com/wiki/doc/api/index.html
@@ -47,9 +46,17 @@ public class WxPayService extends AbstractPayService {
      */
     private String notifyUrl;
     /**
-     * 支付URL
+     * 微信网关
      */
-    private String payUrl;
+    private String gateway;
+    /**
+     * 支付方法
+     */
+    private String payMethod;
+    /**
+     * 退款方法
+     */
+    private String refundMethod;
 
     public WxPayService(PayProp prop) {
         super(prop);
@@ -62,8 +69,7 @@ public class WxPayService extends AbstractPayService {
                 StringUtils.replaceAfter(mchId, mchId.length() - 5, "******"),
                 StringUtils.replaceAfter(key, key.length() - 5, "******"),
                 notifyUrl);
-
-        this.payUrl = WX_GATEWAY + WX_PAY_METHOD;
+        useSandbox(false);
     }
 
     @Override
@@ -71,7 +77,9 @@ public class WxPayService extends AbstractPayService {
         if (sandbox) {
             throw new IllegalArgumentException("当前支付宝支付暂时不支持沙箱模式");
         } else {
-            this.payUrl = WX_GATEWAY + WX_PAY_METHOD;
+            this.gateway = WX_GATEWAY;
+            this.payMethod = WX_PAY_METHOD;
+            this.refundMethod = WX_REFUND_METHOD;
         }
     }
 
@@ -96,32 +104,13 @@ public class WxPayService extends AbstractPayService {
         SysResponse<WxPayResponse> sysResponse = pay(wxPayParam);
         log.info("微信支付参数[{}]对应的响应为：[{}]", param, sysResponse);
 
-        return sysResponse.conver(wxPayResponse -> {
-            PayResponse response = new PayResponse();
-
-            if (isSuccess(wxPayResponse)) {
-                log.debug("订单[{}]对应的微信支付成功", param);
-                response.setCode("SUCCESS");
-                response.setInfo(wxPayResponse.getPrepayId());
-            } else {
-                log.debug("订单[{}]对应的微信支付失败", param);
-                response.setCode("FAIL");
-                if (StringUtils.isEmpty(wxPayResponse.getResultCode())) {
-                    response.setErrCode(wxPayResponse.getReturnCode());
-                    response.setErrMsg(wxPayResponse.getReturnMsg());
-                } else {
-                    response.setErrCode(wxPayResponse.getErrCode());
-                    response.setErrMsg(wxPayResponse.getErrCodeDes());
-                }
-            }
-            log.info("订单[{}]对应的微信支付结果为：[{}]", param, response);
-            return response;
-        });
-    }
-
-    @Override
-    public SysResponse<RefundResponse> refund(RefundRequest request) {
-        return null;
+        return sysResponse.conver(wxPayResponse ->
+                convert(wxPayResponse, new PayResponse(), payResponse -> {
+                    log.debug("订单[{}]对应的微信支付成功", param);
+                    PayResponse response = new PayResponse();
+                    response.setInfo(payResponse.getPrepayId());
+                    return response;
+                }));
     }
 
     /**
@@ -133,21 +122,90 @@ public class WxPayService extends AbstractPayService {
     public SysResponse<WxPayResponse> pay(WxPayParam param) {
         log.debug("发起微信支付，支付参数为：[{}]", param);
         ValidatorUtil.validate(param);
-        return request(param, payUrl, WxPayResponse.class);
+        return request(param, payMethod, WxPayResponse.class);
+    }
+
+    @Override
+    public SysResponse<RefundResponse> refund(RefundRequest request) {
+        log.debug("对微信系统订单[{}]退款", request);
+        WxRefundParam param = new WxRefundParam();
+        param.setOutTradeNo(request.getOutTradeNo());
+        param.setTransaction_id(request.getOrderId());
+        param.setOutRefundNo(request.getOutRefundNo());
+        param.setTotalFee(request.getTotalFee());
+        param.setRefundFee(request.getRefundFee());
+        param.setRefundDesc(request.getRefundDesc());
+
+        SysResponse<WxRefundResponse> sysResponse = refund(param);
+
+        SysResponse<RefundResponse> result = sysResponse.conver(wxRefundResponse ->
+                convert(wxRefundResponse, new RefundResponse(), refundResponse -> {
+                    RefundResponse response = new RefundResponse();
+                    response.setOrderId(refundResponse.getTransactionId());
+                    response.setOutTradeNo(refundResponse.getOutTradeNo());
+                    response.setRefundFee(refundResponse.getRefundFee());
+                    return response;
+                })
+        );
+        log.debug("对微信系统订单[{}]的退款结果是：[{}]", request, result);
+        return result;
+    }
+
+    /**
+     * 调用底层微信退款
+     *
+     * @param param 微信退款参数
+     * @return 微信退款结果
+     */
+    public SysResponse<WxRefundResponse> refund(WxRefundParam param) {
+        log.debug("对微信订单[{}]退款", param);
+        validate(param);
+        if (StringUtils.isEmptyAll(param.getOutTradeNo(), param.getTransaction_id())) {
+            throw new IllegalArgumentException("商户订单号和微信交易号不能同时为空");
+        }
+
+        SysResponse<WxRefundResponse> sysResponse = request(param, refundMethod, WxRefundResponse.class);
+        log.debug("微信订单[{}]退款结果为：[{}]", param, sysResponse);
+        return sysResponse;
+    }
+
+
+    /**
+     * 结果转换，将网络请求的结果转换为系统响应结果
+     *
+     * @param data            网络请求结果
+     * @param r               系统响应结果
+     * @param successFunction 成功结果转换函数，将网络请求结果转换为系统响应结果，验证业务成功后调用该函数
+     * @param <T>             网络请求结果类型
+     * @param <R>             系统响应结果类型
+     * @return 系统响应结果
+     */
+    private <T extends WxPublicResponse, R extends BizResponse> R convert(T data, R r, Function<T, R> successFunction) {
+        R result;
+        if (isSuccess(data)) {
+            result = successFunction.apply(data);
+        } else {
+            result = r;
+        }
+        result.setSuccess(isSuccess(data));
+        result.setCode(getCode(data));
+        result.setErrMsg(getMsg(data));
+        return result;
     }
 
     /**
      * 发送微信请求
      *
      * @param param        请求参数（该方法会设置参数的appid等配置）
-     * @param url          请求地址
+     * @param method       请求地址
      * @param responseType 响应结果类型Class
      * @param <R>          响应结果实际类型
      * @param <P>          请求参数的实际类型
      * @return 响应结果，当响应结果签名校验异常的时候抛出签名校验异常
      */
-    private <R extends WxPublicResponse, P extends WxPublicParam> SysResponse<R> request(P param, String url, Class<R>
-            responseType) {
+    private <R extends WxPublicResponse, P extends WxPublicParam> SysResponse<R> request(P param, String method,
+                                                                                         Class<R>
+                                                                                                 responseType) {
         log.debug("设置微信请求[{}]的商家信息", param);
         param.setAppid(appid);
         param.setMchId(mchId);
@@ -157,7 +215,7 @@ public class WxPayService extends AbstractPayService {
         String data = XML_PARSER.toXml(map, "xml", true);
         log.debug("待发送数据为[{}]", data);
         try {
-            String xmlResponse = CLIENT.executePost(url, data);
+            String xmlResponse = CLIENT.executePost(gateway + method, data);
             log.debug("响应数据：[{}]", xmlResponse);
             R result = XML_PARSER.parse(xmlResponse, responseType);
             if (!checkSign(result)) {
@@ -165,10 +223,10 @@ public class WxPayService extends AbstractPayService {
             }
             return SysResponse.buildSuccess(result);
         } catch (PayException e) {
-            log.error("请求数据[{}]，url：[{}]对应的响应签名校验异常", data, url, e);
+            log.error("请求数据[{}]，url：[{}]对应的响应签名校验异常", data, method, e);
             throw e;
         } catch (Throwable e) {
-            log.error("请求数据[{}]，url：[{}]请求异常", data, url, e);
+            log.error("请求数据[{}]，url：[{}]请求异常", data, method, e);
             return SysResponse.buildError(e);
         }
     }
@@ -205,6 +263,28 @@ public class WxPayService extends AbstractPayService {
      */
     private <R extends WxPublicResponse> boolean isSuccess(R result) {
         return "SUCCESS".equals(result.getReturnCode()) && "SUCCESS".equals(result.getResultCode());
+    }
+
+    /**
+     * 获取响应代码
+     *
+     * @param result 响应结果
+     * @param <R>    结果类型
+     * @return 响应代码
+     */
+    private <R extends WxPublicResponse> String getCode(R result) {
+        return result.getErrCode() == null ? result.getReturnCode() : result.getErrCode();
+    }
+
+    /**
+     * 获取响应代码说明
+     *
+     * @param result 响应结果
+     * @param <R>    结果类型
+     * @return 响应代码说明
+     */
+    private <R extends WxPublicResponse> String getMsg(R result) {
+        return result.getErrCodeDes() == null ? result.getReturnMsg() : result.getErrCodeDes();
     }
 
     /**

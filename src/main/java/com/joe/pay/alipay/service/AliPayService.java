@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.joe.pay.PayConst.*;
 import static com.joe.utils.validator.ValidatorUtil.validate;
@@ -109,13 +110,14 @@ public class AliPayService extends AbstractPayService {
         SysResponse<AliRefundResponse> sysResponse = refund(param, null);
         log.debug("阿里支付退款订单退款结果：[{}]", sysResponse);
 
-        return sysResponse.conver(aliRefundResponse -> convert(aliRefundResponse, new RefundResponse(), () -> {
-            RefundResponse response = new RefundResponse();
-            response.setOrderId(aliRefundResponse.getTradeNo());
-            response.setOutTradeNo(aliRefundResponse.getOutTradeNo());
-            response.setRefundFee((int) (aliRefundResponse.getRefundFee() * 100));
-            return response;
-        }));
+        return sysResponse.conver(aliRefundResponse ->
+                convert(aliRefundResponse, new RefundResponse(), refundResponse -> {
+                    RefundResponse response = new RefundResponse();
+                    response.setOrderId(refundResponse.getTradeNo());
+                    response.setOutTradeNo(refundResponse.getOutTradeNo());
+                    response.setRefundFee((int) (refundResponse.getRefundFee() * 100));
+                    return response;
+                }));
     }
 
     /**
@@ -151,11 +153,11 @@ public class AliPayService extends AbstractPayService {
      * @param <R>             业务数据类型
      * @return 业务响应
      */
-    private <T extends AliPublicResponse, R extends BizResponse> R convert(T data, R r, GetObjectFunction<R>
+    private <T extends AliPublicResponse, R extends BizResponse> R convert(T data, R r, Function<T, R>
             successFunction) {
         R result;
         if ("10000".equals(data.getCode())) {
-            result = successFunction.get();
+            result = successFunction.apply(data);
         } else {
             result = r;
         }

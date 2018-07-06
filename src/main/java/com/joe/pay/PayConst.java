@@ -23,7 +23,13 @@ public class PayConst {
      * 微信下单method
      */
     public static final String WX_PAY_METHOD = "unifiedorder";
+    /**
+     * 阿里退款method
+     */
     public static final String ALI_REFUND_METHOD = "alipay.trade.refund";
-    public static final String WX_REFUND_METHOD = "unifiedorder";
+    /**
+     * 微信退款method
+     */
+    public static final String WX_REFUND_METHOD = "refund";
 
 }
