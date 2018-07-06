@@ -9,7 +9,7 @@ import lombok.Data;
  * @version 2018.07.02 11:47
  */
 @Data
-public class PayResponse implements Response {
+public class PayResponse extends BizResponse {
     /**
      * 支付结果，SUCCESS为成功，其他失败
      */

@@ -282,9 +282,7 @@ public class SysProp {
 ```java
 package com.joe.pay;
 
-import com.joe.pay.pojo.PayRequest;
-import com.joe.pay.pojo.prop.PayProp;
-import com.joe.pay.pojo.PayResponse;
+import com.joe.pay.pojo.*;
 
 /**
  * 支付服务接口
@@ -296,17 +294,27 @@ public interface PayService {
     /**
      * 调用第三方支付
      *
-     * @param param 支付参数
+     * @param request 支付参数
      * @return 支付结果
      */
-    PayResponse pay(PayParam param);
+    SysResponse<PayResponse> pay(PayRequest request);
+
+    /**
+     * 申请退款
+     *
+     * @param request 退款请求
+     * @return 退款响应
+     */
+    SysResponse<RefundResponse> refund(RefundRequest request);
 }
 ```
 使用示例如下：
 ```java
 package com.joe.pay;
 
+import com.joe.pay.pojo.BizResponse;
 import com.joe.pay.pojo.PayRequest;
+import com.joe.pay.pojo.SysResponse;
 import com.joe.pay.pojo.prop.PayProp;
 import com.joe.pay.pojo.PayResponse;
 import com.joe.utils.common.DateUtil;
@@ -321,7 +329,7 @@ import org.junit.Test;
  * @author joe
  * @version 2018.07.02 14:38
  */
-public class PayTest {
+public class PayServiceTest {
     /**
      * 微信配置
      */
@@ -377,9 +385,9 @@ public class PayTest {
      */
     @Test
     public void doWxPay() {
-        PayParam param = build();
-        PayResponse response = wxPayService.pay(param);
-        Assert.assertEquals("SUCCESS", response.getCode());
+        PayRequest param = build();
+        SysResponse<PayResponse> response = wxPayService.pay(param);
+        check(response);
     }
 
     /**
@@ -387,9 +395,14 @@ public class PayTest {
      */
     @Test
     public void doAliPay() {
-        PayParam param = build();
-        PayResponse response = aliPayService.pay(param);
-        Assert.assertEquals("SUCCESS", response.getCode());
+        PayRequest param = build();
+        SysResponse<PayResponse> response = aliPayService.pay(param);
+        check(response);
+    }
+
+    private void check(SysResponse<? extends BizResponse> response) {
+        Assert.assertTrue(response.isSuccess());
+        Assert.assertTrue(response.getData().isSuccess());
     }
 
     /**
@@ -397,8 +410,8 @@ public class PayTest {
      *
      * @return 订单
      */
-    private PayParam build() {
-        PayParam payRequest = new PayParam();
+    private PayRequest build() {
+        PayRequest payRequest = new PayRequest();
         payRequest.setOutTradeNo(Tools.createUUID());
         payRequest.setBody("天天爱消除-游戏充值");
         payRequest.setSubject("天天爱消除-游戏充值");

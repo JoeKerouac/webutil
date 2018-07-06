@@ -1,6 +1,8 @@
 package com.joe.pay;
 
+import com.joe.pay.pojo.BizResponse;
 import com.joe.pay.pojo.PayRequest;
+import com.joe.pay.pojo.SysResponse;
 import com.joe.pay.pojo.prop.PayProp;
 import com.joe.pay.pojo.PayResponse;
 import com.joe.utils.common.DateUtil;
@@ -15,7 +17,7 @@ import org.junit.Test;
  * @author joe
  * @version 2018.07.02 14:38
  */
-public class PayTest {
+public class PayServiceTest {
     /**
      * 微信配置
      */
@@ -72,8 +74,8 @@ public class PayTest {
     @Test
     public void doWxPay() {
         PayRequest param = build();
-        PayResponse response = wxPayService.pay(param);
-        Assert.assertEquals("SUCCESS", response.getCode());
+        SysResponse<PayResponse> response = wxPayService.pay(param);
+        check(response);
     }
 
     /**
@@ -82,8 +84,13 @@ public class PayTest {
     @Test
     public void doAliPay() {
         PayRequest param = build();
-        PayResponse response = aliPayService.pay(param);
-        Assert.assertEquals("SUCCESS", response.getCode());
+        SysResponse<PayResponse> response = aliPayService.pay(param);
+        check(response);
+    }
+
+    private void check(SysResponse<? extends BizResponse> response) {
+        Assert.assertTrue(response.isSuccess());
+        Assert.assertTrue(response.getData().isSuccess());
     }
 
     /**

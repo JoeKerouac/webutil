@@ -76,7 +76,7 @@ public class WxPayService extends AbstractPayService {
     }
 
     @Override
-    public PayResponse pay(PayRequest param) {
+    public SysResponse<PayResponse> pay(PayRequest param) {
         log.debug("调用微信支付，支付参数为：[{}]", param);
         WxPayParam wxPayParam = new WxPayParam();
         wxPayParam.setBody(param.getSubject());
@@ -94,40 +94,33 @@ public class WxPayService extends AbstractPayService {
 
         log.debug("系统订单[{}]转换为了微信订单：[{}]", param, wxPayParam);
         SysResponse<WxPayResponse> sysResponse = pay(wxPayParam);
-
         log.info("微信支付参数[{}]对应的响应为：[{}]", param, sysResponse);
-        PayResponse response = new PayResponse();
 
-        if (!sysResponse.isSuccess()) {
-            response.setCode("EXCEPTION");
-            response.setErrCode(sysResponse.getError().getMessage());
-            response.setErrMsg(sysResponse.getError().toString());
-            return response;
-        }
+        return sysResponse.conver(wxPayResponse -> {
+            PayResponse response = new PayResponse();
 
-        WxPayResponse wxPayResponse = sysResponse.getData();
-
-        if (isSuccess(wxPayResponse)) {
-            log.debug("订单[{}]对应的微信支付成功", param);
-            response.setCode("SUCCESS");
-            response.setInfo(wxPayResponse.getPrepayId());
-        } else {
-            log.debug("订单[{}]对应的微信支付失败", param);
-            response.setCode("FAIL");
-            if (StringUtils.isEmpty(wxPayResponse.getResultCode())) {
-                response.setErrCode(wxPayResponse.getReturnCode());
-                response.setErrMsg(wxPayResponse.getReturnMsg());
+            if (isSuccess(wxPayResponse)) {
+                log.debug("订单[{}]对应的微信支付成功", param);
+                response.setCode("SUCCESS");
+                response.setInfo(wxPayResponse.getPrepayId());
             } else {
-                response.setErrCode(wxPayResponse.getErrCode());
-                response.setErrMsg(wxPayResponse.getErrCodeDes());
+                log.debug("订单[{}]对应的微信支付失败", param);
+                response.setCode("FAIL");
+                if (StringUtils.isEmpty(wxPayResponse.getResultCode())) {
+                    response.setErrCode(wxPayResponse.getReturnCode());
+                    response.setErrMsg(wxPayResponse.getReturnMsg());
+                } else {
+                    response.setErrCode(wxPayResponse.getErrCode());
+                    response.setErrMsg(wxPayResponse.getErrCodeDes());
+                }
             }
-        }
-        log.info("订单[{}]对应的微信支付结果为：[{}]", param, response);
-        return response;
+            log.info("订单[{}]对应的微信支付结果为：[{}]", param, response);
+            return response;
+        });
     }
 
     @Override
-    public RefundResponse refund(RefundRequest request) {
+    public SysResponse<RefundResponse> refund(RefundRequest request) {
         return null;
     }
 

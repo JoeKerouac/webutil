@@ -7,6 +7,7 @@ import com.joe.pay.pojo.*;
 import com.joe.pay.pojo.prop.PayProp;
 import com.joe.utils.collection.CollectionUtil;
 import com.joe.utils.common.*;
+import com.joe.utils.function.GetObjectFunction;
 import com.joe.utils.parse.json.JsonParser;
 import com.joe.utils.secure.RSA;
 import com.joe.utils.validator.ValidatorUtil;
@@ -64,7 +65,7 @@ public class AliPayService extends AbstractPayService {
     }
 
     @Override
-    public PayResponse pay(PayRequest param) {
+    public SysResponse<PayResponse> pay(PayRequest param) {
         AliAppPayParam aliAppPayParam = new AliAppPayParam();
         aliAppPayParam.setBody(param.getBody());
         aliAppPayParam.setSubject(param.getSubject());
@@ -75,48 +76,9 @@ public class AliPayService extends AbstractPayService {
 
         String data = pay(aliAppPayParam);
         PayResponse response = new PayResponse();
-        response.setCode("SUCCESS");
         response.setInfo(data);
         log.info("阿里订单请求[{}]结果：[{}]", param, response);
-        return response;
-    }
-
-    @Override
-    public RefundResponse refund(RefundRequest request) {
-        log.debug("收到阿里支付退款订单：[{}]", request);
-        AliRefundParam param = new AliRefundParam();
-        param.setTradeNo(request.getOrderId());
-        param.setOutTradeNo(request.getOutTradeNo());
-        param.setOutRequestNo(request.getOutRefundNo());
-        param.setRefundAmount(Tools.dealDouble(request.getRefundFee() / 1.0));
-        param.setRefundReason(request.getRefundDesc());
-        SysResponse<AliRefundResponse> sysResponse = refund(param, null);
-        log.debug("阿里支付退款订单退款结果：[{}]", sysResponse);
-
-
-        return null;
-    }
-
-    /**
-     * 订单退款
-     *
-     * @param param           退款详情
-     * @param goodsDetailList 退款商品列表，可以为空
-     */
-    public SysResponse<AliRefundResponse> refund(AliRefundParam param, List<AliRefundParam.GoodsDetail> goodsDetailList) {
-        log.debug("阿里退款请求:[{}]:[{}]", param, goodsDetailList);
-        validate(param);
-        if (StringUtils.isEmptyAll(param.getOutTradeNo(), param.getTradeNo())) {
-            throw new IllegalArgumentException("商户订单号和支付宝交易号不能同时为空");
-        }
-
-        if (!CollectionUtil.safeIsEmpty(goodsDetailList)) {
-            goodsDetailList.parallelStream().forEach(ValidatorUtil::validate);
-            param.setGoodsDetail(JSON_PARSER.toJson(goodsDetailList));
-        }
-
-        SysResponse<AliRefundResponse> sysResponse = request(param, ALI_REFUND_METHOD, AliRefundResponse.class);
-        return sysResponse;
+        return SysResponse.buildSuccess(response);
     }
 
     /**
@@ -133,6 +95,74 @@ public class AliPayService extends AbstractPayService {
         publicParam.setBizContent(JSON_PARSER.toJson(payParam));
         Map<String, Object> map = sign(publicParam);
         return JSON_PARSER.toJson(map);
+    }
+
+    @Override
+    public SysResponse<RefundResponse> refund(RefundRequest request) {
+        log.debug("收到阿里支付退款订单：[{}]", request);
+        AliRefundParam param = new AliRefundParam();
+        param.setTradeNo(request.getOrderId());
+        param.setOutTradeNo(request.getOutTradeNo());
+        param.setOutRequestNo(request.getOutRefundNo());
+        param.setRefundAmount(request.getRefundFee() / 1.0);
+        param.setRefundReason(request.getRefundDesc());
+        SysResponse<AliRefundResponse> sysResponse = refund(param, null);
+        log.debug("阿里支付退款订单退款结果：[{}]", sysResponse);
+
+        return sysResponse.conver(aliRefundResponse -> convert(aliRefundResponse, new RefundResponse(), () -> {
+            RefundResponse response = new RefundResponse();
+            response.setOrderId(aliRefundResponse.getTradeNo());
+            response.setOutTradeNo(aliRefundResponse.getOutTradeNo());
+            response.setRefundFee((int) (aliRefundResponse.getRefundFee() * 100));
+            return response;
+        }));
+    }
+
+    /**
+     * 订单退款
+     *
+     * @param param           退款详情
+     * @param goodsDetailList 退款商品列表，可以为空
+     */
+    public SysResponse<AliRefundResponse> refund(AliRefundParam param, List<AliRefundParam.GoodsDetail>
+            goodsDetailList) {
+        log.debug("阿里退款请求:[{}]:[{}]", param, goodsDetailList);
+        validate(param);
+        if (StringUtils.isEmptyAll(param.getOutTradeNo(), param.getTradeNo())) {
+            throw new IllegalArgumentException("商户订单号和支付宝交易号不能同时为空");
+        }
+
+        if (!CollectionUtil.safeIsEmpty(goodsDetailList)) {
+            goodsDetailList.parallelStream().forEach(ValidatorUtil::validate);
+            param.setGoodsDetail(JSON_PARSER.toJson(goodsDetailList));
+        }
+
+        SysResponse<AliRefundResponse> sysResponse = request(param, ALI_REFUND_METHOD, AliRefundResponse.class);
+        return sysResponse;
+    }
+
+    /**
+     * 处理业务
+     *
+     * @param data            阿里响应
+     * @param r               业务响应
+     * @param successFunction 业务成功时的回调
+     * @param <T>             阿里响应类型
+     * @param <R>             业务数据类型
+     * @return 业务响应
+     */
+    private <T extends AliPublicResponse, R extends BizResponse> R convert(T data, R r, GetObjectFunction<R>
+            successFunction) {
+        R result;
+        if ("10000".equals(data.getCode())) {
+            result = successFunction.get();
+        } else {
+            result = r;
+        }
+        result.setSuccess("10000".equals(data.getCode()));
+        result.setCode(data.getCode());
+        result.setErrMsg(data.getMsg());
+        return result;
     }
 
     /**

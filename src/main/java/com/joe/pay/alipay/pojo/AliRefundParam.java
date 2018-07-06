@@ -29,7 +29,7 @@ public class AliRefundParam implements BizContent{
      */
     @NotEmpty(message = "退款金额不能为空")
     @JsonProperty("refund_amount")
-    private String refundAmount;
+    private double refundAmount;
     /**
      * 订单退款币种信息，非外币交易，不能传入退款币种信息
      * <p>

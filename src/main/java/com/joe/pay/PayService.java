@@ -1,9 +1,6 @@
 package com.joe.pay;
 
-import com.joe.pay.pojo.PayRequest;
-import com.joe.pay.pojo.PayResponse;
-import com.joe.pay.pojo.RefundRequest;
-import com.joe.pay.pojo.RefundResponse;
+import com.joe.pay.pojo.*;
 
 /**
  * 支付服务接口
@@ -18,7 +15,7 @@ public interface PayService {
      * @param request 支付参数
      * @return 支付结果
      */
-    PayResponse pay(PayRequest request);
+    SysResponse<PayResponse> pay(PayRequest request);
 
     /**
      * 申请退款
@@ -26,5 +23,5 @@ public interface PayService {
      * @param request 退款请求
      * @return 退款响应
      */
-    RefundResponse refund(RefundRequest request);
+    SysResponse<RefundResponse> refund(RefundRequest request);
 }
