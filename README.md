@@ -422,6 +422,6 @@ public class PayServiceTest {
     }
 }
 ```
-可以看出，对于微信支付和支付宝支付调用方式是一模一样的，不同的是只需要创建不同的`PayService`实例即可。而如果`PayService`提供的pay接口的参数不满足您的业务，而您对支付宝和微信支付的底层业务有比较熟悉，那么本框架还给您提供了另一种解决方案，`AliPayService`和`WxPayService`都提供了一个重载pay方法（需要将`PayService`强转为`AliPayService`或者`WxPayService`），只需要使用该重载方法即可使用完整的功能，一般来说PayService接口提供的pay功能即可满足大多数支付需求。
+可以看出，对于微信支付和支付宝支付调用方式是一模一样的，不同的是只需要创建不同的`PayService`实例即可。而如果`PayService`提供的接口的参数不满足您的业务，而您对支付宝和微信支付的底层业务又比较熟悉，那么本框架还给您提供了另一种解决方案，对于所有`PayService`接口的方法`AliPayService`和`WxPayService`都提供了一个重载方法（需要将`PayService`强转为`AliPayService`或者`WxPayService`），只需要使用该重载方法即可使用完整的功能，一般来说PayService接口提供的功能即可满足大多数支付需求。
 
 注：当前暂时没有退款等相关接口，该部分接口正在开发中。
