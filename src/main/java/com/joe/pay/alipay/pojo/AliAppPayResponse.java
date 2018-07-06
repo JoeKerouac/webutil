@@ -2,6 +2,7 @@ package com.joe.pay.alipay.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * 阿里app支付接口2.0响应
@@ -10,6 +11,7 @@ import lombok.Data;
  * @version 2018.06.29 11:18
  */
 @Data
+@ToString(callSuper = true)
 public class AliAppPayResponse extends AliPublicResponse {
     /**
      * 商户网站唯一订单号

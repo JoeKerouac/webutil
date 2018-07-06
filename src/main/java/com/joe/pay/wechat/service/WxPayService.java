@@ -1,5 +1,8 @@
 package com.joe.pay.wechat.service;
 
+import com.joe.http.IHttpClientUtil;
+import com.joe.http.client.IHttpClient;
+import com.joe.http.common.SSLTools;
 import com.joe.pay.AbstractPayService;
 import com.joe.pay.exception.CheckSignException;
 import com.joe.pay.exception.PayException;
@@ -27,6 +30,7 @@ import java.util.function.Function;
  */
 @Slf4j
 public class WxPayService extends AbstractPayService {
+    protected IHttpClientUtil wxClient;
     private static final XmlParser XML_PARSER = XmlParser.getInstance();
     private static final MD5 MD_5 = new MD5();
     /**
@@ -41,6 +45,10 @@ public class WxPayService extends AbstractPayService {
      * 商户平台设置的密钥key
      */
     private String key;
+    /**
+     * 是否支持退款（true表示支持）
+     */
+    private boolean supportRefund = false;
     /**
      * 支付异步回调通知地址
      */
@@ -64,6 +72,17 @@ public class WxPayService extends AbstractPayService {
         this.mchId = prop.getMchId();
         this.key = prop.getKey();
         this.notifyUrl = prop.getNotifyUrl();
+        //微信需要采用需要证书
+        if (prop.getCertInput() == null) {
+            this.wxClient = DEFAULT_CLIENT;
+            log.warn("当前没有提供微信证书，不能使用退款接口");
+        } else {
+            IHttpClient client = IHttpClient.builder()
+                    .sslcontext(SSLTools.build(prop.getCertInput(), "PKCS12", prop.getPassword()))
+                    .build();
+            this.wxClient = new IHttpClientUtil(client);
+            supportRefund = true;
+        }
         log.info("初始化微信支付服务，appid:[{}];mchid:[{}];key:[{}};notifyUrl:[{}]",
                 appid,
                 StringUtils.replaceAfter(mchId, mchId.length() - 5, "******"),
@@ -158,6 +177,9 @@ public class WxPayService extends AbstractPayService {
      * @return 微信退款结果
      */
     public SysResponse<WxRefundResponse> refund(WxRefundParam param) {
+        if (!supportRefund) {
+            throw new RuntimeException("当前没有提供微信证书，不支持退款操作");
+        }
         log.debug("对微信订单[{}]退款", param);
         validate(param);
         if (StringUtils.isEmptyAll(param.getOutTradeNo(), param.getTransaction_id())) {
@@ -213,9 +235,10 @@ public class WxPayService extends AbstractPayService {
         Map<String, Object> map = sign(param);
 
         String data = XML_PARSER.toXml(map, "xml", true);
-        log.debug("待发送数据为[{}]", data);
+        String realMethod = gateway + method;
+        log.debug("准备往[{}]发送数据为[{}]", realMethod, data);
         try {
-            String xmlResponse = CLIENT.executePost(gateway + method, data);
+            String xmlResponse = wxClient.executePost(realMethod, data);
             log.debug("响应数据：[{}]", xmlResponse);
             R result = XML_PARSER.parse(xmlResponse, responseType);
             if (!checkSign(result)) {
@@ -262,7 +285,7 @@ public class WxPayService extends AbstractPayService {
      * @return 返回true表示成功
      */
     private <R extends WxPublicResponse> boolean isSuccess(R result) {
-        return "SUCCESS".equals(result.getReturnCode()) && "SUCCESS".equals(result.getResultCode());
+        return result != null && "SUCCESS".equals(result.getReturnCode()) && "SUCCESS".equals(result.getResultCode());
     }
 
     /**

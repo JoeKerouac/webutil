@@ -2,6 +2,7 @@ package com.joe.pay.alipay.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * 阿里退款响应
@@ -10,6 +11,7 @@ import lombok.Data;
  * @version 2018.07.05 18:45
  */
 @Data
+@ToString(callSuper = true)
 public class AliRefundResponse extends AliPublicResponse {
     /**
      * 订单支付时传入的商户订单号,不能和 trade_no同时为空。
@@ -46,6 +48,11 @@ public class AliRefundResponse extends AliPublicResponse {
      */
     @JsonProperty("refund_fee")
     private double refundFee;
+    /**
+     * 错误时有，暂时不知道有什么用
+     */
+    @JsonProperty("send_back_fee")
+    private double sendBackFee;
     /**
      * 退款币种信息
      * <p>

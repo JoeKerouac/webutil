@@ -13,7 +13,7 @@ import static com.joe.utils.validator.ValidatorUtil.validate;
  * @version 2018.07.05 10:32
  */
 public abstract class AbstractPayService implements PayService {
-    protected static final IHttpClientUtil CLIENT = new IHttpClientUtil();
+    protected static final IHttpClientUtil DEFAULT_CLIENT = new IHttpClientUtil();
     /**
      * 当前是否是沙箱，true表示是，false表示不是
      */

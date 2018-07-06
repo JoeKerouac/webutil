@@ -1,13 +1,13 @@
 package com.joe.pay.alipay.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.joe.http.request.IHttpRequestBase;
 import com.joe.pay.AbstractPayService;
 import com.joe.pay.alipay.pojo.*;
 import com.joe.pay.pojo.*;
 import com.joe.pay.pojo.prop.PayProp;
 import com.joe.utils.collection.CollectionUtil;
 import com.joe.utils.common.*;
-import com.joe.utils.function.GetObjectFunction;
 import com.joe.utils.parse.json.JsonParser;
 import com.joe.utils.secure.RSA;
 import com.joe.utils.validator.ValidatorUtil;
@@ -78,6 +78,7 @@ public class AliPayService extends AbstractPayService {
         String data = pay(aliAppPayParam);
         PayResponse response = new PayResponse();
         response.setInfo(data);
+        response.setSuccess(true);
         log.info("阿里订单请求[{}]结果：[{}]", param, response);
         return SysResponse.buildSuccess(response);
     }
@@ -108,7 +109,7 @@ public class AliPayService extends AbstractPayService {
         param.setRefundAmount(request.getRefundFee() / 1.0);
         param.setRefundReason(request.getRefundDesc());
         SysResponse<AliRefundResponse> sysResponse = refund(param, null);
-        log.debug("阿里支付退款订单退款结果：[{}]", sysResponse);
+        log.debug("阿里系统支付退款订单退款结果：[{}]", sysResponse);
 
         return sysResponse.conver(aliRefundResponse ->
                 convert(aliRefundResponse, new RefundResponse(), refundResponse -> {
@@ -139,7 +140,8 @@ public class AliPayService extends AbstractPayService {
             param.setGoodsDetail(JSON_PARSER.toJson(goodsDetailList));
         }
 
-        SysResponse<AliRefundResponse> sysResponse = request(param, ALI_REFUND_METHOD, AliRefundResponse.class);
+        SysResponse<AliRefundResponse> sysResponse = request(param, ALI_REFUND_METHOD, AliRefundResponseData.class);
+        log.debug("阿里支付退款订单退款结果：[{}]", sysResponse);
         return sysResponse;
     }
 
@@ -192,20 +194,25 @@ public class AliPayService extends AbstractPayService {
      * @param <T>     响应类型
      * @return 响应，请求异常时返回null
      */
-    private <T extends AliPublicResponse> SysResponse<T> request(BizContent content, String method, Class<T> type) {
+    private <D extends AliResponseData<T>, T extends AliPublicResponse> SysResponse<T> request(BizContent content,
+                                                                                               String method,
+                                                                                               Class<D> type) {
         log.debug("发起支付宝请求，业务参数为[{}]", content);
         AliPublicParam param = buildPublicParam(method);
-        param.setBizContent(JSON_PARSER.toJson(content));
+        param.setBizContent(JSON_PARSER.toJson(content, true));
 
         //签名
         Map<String, Object> map = sign(param);
 
-        String data = JSON_PARSER.toJson(map);
+        String data = FormDataBuilder.builder(map).data(true, "UTF8");
         log.debug("要发送的数据为：[{}]", data);
         try {
-            String result = CLIENT.executePost(gateway, data);
-            log.debug("请求数据[{}]的请求结果为：[{}]", result);
-            T t = JSON_PARSER.readAsObject(result, type);
+            String result = DEFAULT_CLIENT.executePost(gateway, data, "UTF8", "UTF8",
+                    IHttpRequestBase.CONTENT_TYPE_FORM);
+            log.debug("请求数据[{}]的请求结果为：[{}]", data, result);
+            D responseData = JSON_PARSER.readAsObject(result, type);
+            //目前对responseData没有验签逻辑，需要添加验签逻辑
+            T t = responseData.getData();
             return SysResponse.buildSuccess(t);
         } catch (Throwable e) {
             log.error("请求[{}]数据[{}]请求失败", gateway, data, e);

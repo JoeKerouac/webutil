@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
+import java.io.InputStream;
 
 /**
  * 支付配置
@@ -47,6 +48,16 @@ public final class PayProp {
      * 环境信息，为空时默认使用PROD
      */
     private final Environment environment;
+    /**
+     * 微信证书输入流，只有微信有，退款的时候会用到证书，要求PKCS12格式
+     * <p>
+     * 如果不提供证书则默认不能使用退款功能
+     */
+    private final InputStream certInput;
+    /**
+     * 证书密码（微信默认证书密码就是mchid）
+     */
+    private final String password;
 
     /**
      * 支付模式（后缀SANDBOX的为沙箱模式）

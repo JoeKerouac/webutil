@@ -27,7 +27,6 @@ public class AliRefundParam implements BizContent{
      * <p>
      * 必填，9位
      */
-    @NotEmpty(message = "退款金额不能为空")
     @JsonProperty("refund_amount")
     private double refundAmount;
     /**

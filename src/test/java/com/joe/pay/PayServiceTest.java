@@ -1,10 +1,7 @@
 package com.joe.pay;
 
-import com.joe.pay.pojo.BizResponse;
-import com.joe.pay.pojo.PayRequest;
-import com.joe.pay.pojo.SysResponse;
+import com.joe.pay.pojo.*;
 import com.joe.pay.pojo.prop.PayProp;
-import com.joe.pay.pojo.PayResponse;
 import com.joe.utils.common.DateUtil;
 import com.joe.utils.common.Tools;
 import org.junit.Assert;
@@ -58,9 +55,10 @@ public class PayServiceTest {
                 "5QOfUvDAd3zi4BGO1s7+FA+BqZCq9yLfnS9VJmg5ABXVsDmQSVPu0KpSMLr9WhP34FjW0XM2QkSvjuVxrXLeaeNTGhLK+sCnT" +
                 "9QKBgHfd3hhLWjO4zh99B+PRYFgpnJa9S5E1zzoejZVIJhK5q60KLV5n/HMxuHTGRZxpbfcH4/44d3Yz7ieccmCiPtqxFYUwP" +
                 "W0JukNWDL2tOzTSZ5ABAwqorV3bM67mLUSt0O5dL4YtSBJ2J3F6joO1fTZEcUCybO/A5J4wTZDOV1AR";
+
         //配置支付宝支付，需要将下列参数替换为自己的参数
         aliProp = PayProp.builder()
-                .appid("123")
+                .appid("123123123")
                 .key(aliKey)
                 .notifyUrl("http://www.baidu.com")
                 .mode(PayProp.PayMode.ALIAPP)
@@ -73,32 +71,73 @@ public class PayServiceTest {
      */
     @Test
     public void doWxPay() {
-        PayRequest param = build();
-        SysResponse<PayResponse> response = wxPayService.pay(param);
-        check(response);
+        doPay(wxPayService);
     }
 
     /**
-     * 测试微信支付
+     * 测试支付宝支付
      */
     @Test
     public void doAliPay() {
-        PayRequest param = build();
-        SysResponse<PayResponse> response = aliPayService.pay(param);
-        check(response);
+        doPay(aliPayService);
     }
 
+    /**
+     * 测试微信退款
+     * <p>
+     * 注意：该测试当前通不过，因为没有提供正确的证书，若想要测试通过则需要在配置文件中提供正确的微信证书和单号
+     */
+    @Test
+    public void doWxRefund() {
+        doRefund(wxPayService);
+    }
+
+    /**
+     * 测试支付宝退款
+     * <p>
+     * 注意：该测试当前通不过，若想要测试通过则需要提供正确的单号
+     */
+    @Test
+    public void doAliRefund() {
+        doRefund(aliPayService);
+    }
+
+    /**
+     * 校验响应
+     *
+     * @param response 响应
+     */
     private void check(SysResponse<? extends BizResponse> response) {
         Assert.assertTrue(response.isSuccess());
         Assert.assertTrue(response.getData().isSuccess());
     }
 
     /**
-     * 构建一个订单
+     * 发起支付请求
      *
-     * @return 订单
+     * @param service service
      */
-    private PayRequest build() {
+    private void doPay(PayService service) {
+        SysResponse<PayResponse> response = service.pay(buildPay());
+        check(response);
+    }
+
+    /**
+     * 发起退款请求
+     *
+     * @param service service
+     */
+    private void doRefund(PayService service) {
+        SysResponse<RefundResponse> response = service.refund(buildRefund());
+        System.out.println("结果是：" + response);
+    }
+
+    /**
+     * 构建一个支付订单
+     *
+     * @return 支付订单
+     */
+    private PayRequest buildPay() {
         PayRequest payRequest = new PayRequest();
         payRequest.setOutTradeNo(Tools.createUUID());
         payRequest.setBody("天天爱消除-游戏充值");
@@ -107,5 +146,19 @@ public class PayServiceTest {
         payRequest.setTotalAmount(100 * 10);
         payRequest.setIp("106.120.141.226");
         return payRequest;
+    }
+
+    /**
+     * 构建一个退款订单
+     *
+     * @return 退款订单
+     */
+    private RefundRequest buildRefund() {
+        RefundRequest request = new RefundRequest();
+        request.setOutTradeNo("123456");
+        request.setOutRefundNo("123456");
+        request.setTotalFee(100 * 10);
+        request.setRefundFee(100);
+        return request;
     }
 }

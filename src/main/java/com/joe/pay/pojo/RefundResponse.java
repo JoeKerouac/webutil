@@ -1,6 +1,7 @@
 package com.joe.pay.pojo;
 
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * 退款响应
@@ -9,6 +10,7 @@ import lombok.Data;
  * @version 2018.07.05 17:59
  */
 @Data
+@ToString(callSuper = true)
 public class RefundResponse extends BizResponse {
     /**
      * 第三方订单ID（微信/支付宝）
