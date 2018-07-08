@@ -4,15 +4,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.joe.http.request.IHttpRequestBase;
 import com.joe.pay.AbstractPayService;
 import com.joe.pay.alipay.pojo.*;
+import com.joe.pay.exception.CheckSignException;
 import com.joe.pay.pojo.*;
 import com.joe.pay.pojo.prop.PayProp;
 import com.joe.utils.collection.CollectionUtil;
 import com.joe.utils.common.*;
 import com.joe.utils.parse.json.JsonParser;
 import com.joe.utils.secure.RSA;
+import com.joe.utils.secure.RSAType;
 import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -46,14 +49,19 @@ public class AliPayService extends AbstractPayService {
      * 支付宝网关
      */
     private String gateway;
+    /**
+     * 字符集
+     */
+    private String charset;
 
     public AliPayService(PayProp prop) {
         super(prop);
         this.appid = prop.getAppid();
         this.privateKey = prop.getKey();
-        this.rsa = new RSA(privateKey, RSA.RSAType.SHA256WithRSA);
+        this.rsa = new RSA(privateKey, prop.getPublicKey(), RSAType.SHA256WithRSA);
         this.notifyUrl = prop.getNotifyUrl();
-        this.gateway = ALI_GATEWAY;
+        this.charset = Charset.defaultCharset().name();
+        useSandbox(false);
     }
 
     @Override
@@ -111,14 +119,14 @@ public class AliPayService extends AbstractPayService {
         SysResponse<AliRefundResponse> sysResponse = refund(param, null);
         log.debug("阿里系统支付退款订单退款结果：[{}]", sysResponse);
 
-        return sysResponse.conver(aliRefundResponse ->
-                convert(aliRefundResponse, new RefundResponse(), refundResponse -> {
-                    RefundResponse response = new RefundResponse();
-                    response.setOrderId(refundResponse.getTradeNo());
-                    response.setOutTradeNo(refundResponse.getOutTradeNo());
-                    response.setRefundFee((int) (refundResponse.getRefundFee() * 100));
-                    return response;
-                }));
+        return sysResponse.conver(aliRefundResponse -> convert(aliRefundResponse, new RefundResponse(),
+                refundResponse -> {
+            RefundResponse response = new RefundResponse();
+            response.setOrderId(refundResponse.getTradeNo());
+            response.setOutTradeNo(refundResponse.getOutTradeNo());
+            response.setRefundFee((int) (refundResponse.getRefundFee() * 100));
+            return response;
+        }));
     }
 
     /**
@@ -207,16 +215,38 @@ public class AliPayService extends AbstractPayService {
         String data = FormDataBuilder.builder(map).data(true, "UTF8");
         log.debug("要发送的数据为：[{}]", data);
         try {
-            String result = DEFAULT_CLIENT.executePost(gateway, data, "UTF8", "UTF8",
-                    IHttpRequestBase.CONTENT_TYPE_FORM);
+
+            String result = DEFAULT_CLIENT.executePost(gateway, data, charset, charset, IHttpRequestBase
+                    .CONTENT_TYPE_FORM);
             log.debug("请求数据[{}]的请求结果为：[{}]", data, result);
             D responseData = JSON_PARSER.readAsObject(result, type);
             //目前对responseData没有验签逻辑，需要添加验签逻辑
             T t = responseData.getData();
+            //校验签名
+            checkSign(t, responseData.getSign());
             return SysResponse.buildSuccess(t);
         } catch (Throwable e) {
             log.error("请求[{}]数据[{}]请求失败", gateway, data, e);
             return SysResponse.buildError(e);
+        }
+    }
+
+    /**
+     * 校验网络请求响应签名
+     *
+     * @param t    响应数据
+     * @param sign 响应签名
+     * @param <T>  响应数据实际类型
+     */
+    private <T extends AliPublicResponse> void checkSign(T t, String sign) {
+        String data = JSON_PARSER.toJson(t, true);
+        boolean check = rsa.check(data, sign);
+        if (!check && data.contains("\\/")) {
+            data = data.replace("\\/", "/");
+            check = rsa.check(data, sign);
+        }
+        if (!check) {
+            throw new CheckSignException("支付宝响应签名校验异常·");
         }
     }
 

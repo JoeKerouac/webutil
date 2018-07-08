@@ -35,6 +35,10 @@ public final class PayProp {
     @NotEmpty(message = "key不能为空")
     private final String key;
     /**
+     * 商户平台设置的公钥（阿里有）
+     */
+    private final String publicKey;
+    /**
      * 支付异步回调通知地址
      */
     @NotEmpty(message = "notifyUrl不能为空")

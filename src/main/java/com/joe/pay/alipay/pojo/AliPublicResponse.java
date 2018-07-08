@@ -6,6 +6,8 @@ import lombok.Data;
 
 /**
  * 公共响应参数
+ * <p>
+ * 由于校验签名需要，该类的所有子类不能使用基本类型（byte、int等）
  *
  * @author joe
  * @version 2018.06.29 11:10

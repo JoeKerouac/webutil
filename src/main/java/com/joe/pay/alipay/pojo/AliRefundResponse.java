@@ -47,12 +47,12 @@ public class AliRefundResponse extends AliPublicResponse {
      * 必填，最大长度1
      */
     @JsonProperty("refund_fee")
-    private double refundFee;
+    private Double refundFee;
     /**
      * 错误时有，暂时不知道有什么用
      */
     @JsonProperty("send_back_fee")
-    private double sendBackFee;
+    private Double sendBackFee;
     /**
      * 退款币种信息
      * <p>
