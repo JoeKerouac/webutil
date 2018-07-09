@@ -1,7 +1,9 @@
 package com.joe.pay;
 
 import com.joe.pay.alipay.service.AliPayService;
+import com.joe.pay.pojo.prop.AliPayProp;
 import com.joe.pay.pojo.prop.PayProp;
+import com.joe.pay.pojo.prop.WxPayProp;
 import com.joe.pay.wechat.service.WxPayService;
 
 import java.util.HashMap;
@@ -29,24 +31,23 @@ public class PayServiceFactory {
         }
 
         PayProp.PayMode mode = prop.getMode();
-        if (mode == null) {
-            throw new IllegalArgumentException("支付模式mode不能为空");
-        }
+
         synchronized (mode) {
             if ((service = CACHE.get(prop)) != null) {
                 return service;
             }
             switch (mode) {
                 case ALIAPP:
-                    service = new AliPayService(prop);
+                    service = new AliPayService((AliPayProp) prop);
                     break;
                 case WECHAT:
-                    service = new WxPayService(prop);
+                    service = new WxPayService((WxPayProp) prop);
                     break;
                 default:
                     throw new IllegalArgumentException("未知支付模式：" + mode);
             }
         }
+        CACHE.put(prop, service);
         return service;
     }
 }

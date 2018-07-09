@@ -1,13 +1,10 @@
 package com.joe.pay.pojo.prop;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
-import java.io.InputStream;
 
 /**
  * 支付配置
@@ -15,53 +12,111 @@ import java.io.InputStream;
  * @author joe
  * @version 2018.07.02 14:31
  */
-@Data
+@Getter
 @EqualsAndHashCode
-@AllArgsConstructor
-@Builder
-public final class PayProp {
-    /**
-     * appid
-     */
-    @NotEmpty(message = "appid不能为空")
-    private final String appid;
-    /**
-     * 商户ID（微信支付有）
-     */
-    private final String mchId;
-    /**
-     * 商户平台设置的密钥key
-     */
-    @NotEmpty(message = "key不能为空")
-    private final String key;
-    /**
-     * 商户平台设置的公钥（阿里有）
-     */
-    private final String publicKey;
-    /**
-     * 支付异步回调通知地址
-     */
-    @NotEmpty(message = "notifyUrl不能为空")
-    private final String notifyUrl;
+public class PayProp {
     /**
      * 支付模式
      */
     @NotNull(message = "支付模式不能为空")
-    private final PayMode mode;
+    private PayMode mode;
+    /**
+     * appid
+     */
+    @NotEmpty(message = "请提供appid")
+    private String appid;
+    /**
+     * 支付异步回调通知地址
+     */
+    @NotEmpty(message = "请提供notifyUrl")
+    private String notifyUrl;
     /**
      * 环境信息，为空时默认使用PROD
      */
-    private final Environment environment;
-    /**
-     * 微信证书输入流，只有微信有，退款的时候会用到证书，要求PKCS12格式
-     * <p>
-     * 如果不提供证书则默认不能使用退款功能
-     */
-    private final InputStream certInput;
-    /**
-     * 证书密码（微信默认证书密码就是mchid）
-     */
-    private final String password;
+    private Environment environment =  Environment.PROD;
+
+    PayProp(PayMode mode) {
+        this.mode = mode;
+    }
+
+    public static PayPropBuilder builder() {
+        return new PayPropBuilder();
+    }
+
+    public static class PayPropBuilder {
+        /**
+         * appid
+         */
+        @NotEmpty(message = "appid不能为空")
+        private String appid;
+        /**
+         * 支付异步回调通知地址
+         */
+        @NotEmpty(message = "notifyUrl不能为空")
+        private String notifyUrl;
+        /**
+         * 环境信息，为空时默认使用PROD
+         */
+        private Environment environment = Environment.PROD;
+
+        PayPropBuilder() {
+
+        }
+
+        /**
+         * 使用阿里支付
+         *
+         * @return 阿里支付配置构建器
+         */
+        public AliPayProp.AliPayPropBuilder useAliPay() {
+            return merge(new AliPayProp.AliPayPropBuilder());
+        }
+
+        /**
+         * 使用微信支付
+         *
+         * @return 微信支付配置构建器
+         */
+        public WxPayProp.WxPayPropBuilder useWxPay() {
+            return merge(new WxPayProp.WxPayPropBuilder());
+        }
+
+        /**
+         * 将本配置和指定配置合并
+         *
+         * @param prop 指定合并的配置
+         * @param <T>  配置类型
+         * @return 合并后的配置
+         */
+        private <T extends PayPropBuilder> T merge(T prop) {
+            prop.appid(this.appid);
+            prop.notifyUrl(this.notifyUrl);
+            prop.environment(this.environment);
+            return prop;
+        }
+
+        public PayPropBuilder appid(String appid) {
+            this.appid = appid;
+            return this;
+        }
+
+        public PayPropBuilder notifyUrl(String notifyUrl) {
+            this.notifyUrl = notifyUrl;
+            return this;
+        }
+
+        public PayPropBuilder environment(Environment environment) {
+            this.environment = environment == null ? Environment.PROD: environment;
+            return this;
+        }
+
+        protected PayProp build(PayProp prop) {
+            prop.appid = this.appid;
+            prop.notifyUrl = this.notifyUrl;
+            prop.environment = this.environment;
+            return prop;
+        }
+    }
 
     /**
      * 支付模式（后缀SANDBOX的为沙箱模式）

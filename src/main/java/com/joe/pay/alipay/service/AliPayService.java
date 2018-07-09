@@ -6,7 +6,7 @@ import com.joe.pay.AbstractPayService;
 import com.joe.pay.alipay.pojo.*;
 import com.joe.pay.exception.CheckSignException;
 import com.joe.pay.pojo.*;
-import com.joe.pay.pojo.prop.PayProp;
+import com.joe.pay.pojo.prop.AliPayProp;
 import com.joe.utils.collection.CollectionUtil;
 import com.joe.utils.common.*;
 import com.joe.utils.parse.json.JsonParser;
@@ -54,10 +54,10 @@ public class AliPayService extends AbstractPayService {
      */
     private String charset;
 
-    public AliPayService(PayProp prop) {
+    public AliPayService(AliPayProp prop) {
         super(prop);
         this.appid = prop.getAppid();
-        this.privateKey = prop.getKey();
+        this.privateKey = prop.getPrivateKey();
         this.rsa = new RSA(privateKey, prop.getPublicKey(), RSAType.SHA256WithRSA);
         this.notifyUrl = prop.getNotifyUrl();
         this.charset = Charset.defaultCharset().name();

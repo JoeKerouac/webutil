@@ -2,7 +2,6 @@ package com.joe.pay;
 
 import com.joe.http.IHttpClientUtil;
 import com.joe.pay.pojo.prop.PayProp;
-import com.joe.utils.common.StringUtils;
 
 import static com.joe.utils.validator.ValidatorUtil.validate;
 
@@ -22,9 +21,6 @@ public abstract class AbstractPayService implements PayService {
     public AbstractPayService(PayProp prop) {
         //验证参数
         validate(prop);
-        if (prop.getMode() == PayProp.PayMode.WECHAT && StringUtils.isEmpty(prop.getMchId())) {
-            throw new IllegalArgumentException("当前支付模式是微信支付，请提供微信商户ID");
-        }
         PayProp.Environment environment = prop.getEnvironment();
         environment = environment == null ? PayProp.Environment.PROD : environment;
         switch (environment) {

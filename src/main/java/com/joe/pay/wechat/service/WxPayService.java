@@ -7,7 +7,7 @@ import com.joe.pay.AbstractPayService;
 import com.joe.pay.exception.CheckSignException;
 import com.joe.pay.exception.PayException;
 import com.joe.pay.pojo.*;
-import com.joe.pay.pojo.prop.PayProp;
+import com.joe.pay.pojo.prop.WxPayProp;
 import com.joe.pay.wechat.pojo.*;
 import com.joe.utils.common.*;
 import com.joe.utils.parse.xml.XmlNode;
@@ -16,11 +16,11 @@ import com.joe.utils.secure.MD5;
 import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.joe.pay.PayConst.*;
-import static com.joe.utils.validator.ValidatorUtil.validate;
-
 import java.util.Map;
 import java.util.function.Function;
+
+import static com.joe.pay.PayConst.*;
+import static com.joe.utils.validator.ValidatorUtil.validate;
 
 /**
  * 微信支付服务，文档：https://pay.weixin.qq.com/wiki/doc/api/index.html
@@ -66,7 +66,7 @@ public class WxPayService extends AbstractPayService {
      */
     private String refundMethod;
 
-    public WxPayService(PayProp prop) {
+    public WxPayService(WxPayProp prop) {
         super(prop);
         this.appid = prop.getAppid();
         this.mchId = prop.getMchId();
