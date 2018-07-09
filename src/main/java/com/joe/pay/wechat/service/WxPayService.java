@@ -73,9 +73,10 @@ public class WxPayService extends AbstractPayService {
         this.key = prop.getKey();
         this.notifyUrl = prop.getNotifyUrl();
         //微信需要采用需要证书
-        if (prop.getCertInput() == null) {
+        if (prop.getCertInput() == null || StringUtils.isEmpty(prop.getPassword())) {
             this.wxClient = DEFAULT_CLIENT;
-            log.warn("当前没有提供微信证书，不能使用退款接口");
+            supportRefund = false;
+            log.warn("当前没有提供微信证书或者证书密码为空，不能使用退款接口");
         } else {
             IHttpClient client = IHttpClient.builder()
                     .sslcontext(SSLTools.build(prop.getCertInput(), "PKCS12", prop.getPassword()))
