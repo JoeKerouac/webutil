@@ -2,6 +2,10 @@ package com.joe.pay.wechat.pojo;
 
 import com.joe.utils.parse.xml.XmlNode;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 /**
  * 微信支付参数
@@ -29,6 +33,7 @@ public class WxPayParam extends WxPublicParam {
      * <p>
      * 类型：String(128)
      */
+    @NotEmpty(message = "请提供商品描述交易字段（body）")
     private String body;
     /**
      * 商品详细描述，对于使用单品优惠的商户，改字段必须按照规范上传
@@ -53,6 +58,7 @@ public class WxPayParam extends WxPublicParam {
      * <p>
      * 类型：String(32)
      */
+    @NotEmpty(message = "请提供商户系统内部订单号（out_trade_no）")
     @XmlNode(name = "out_trade_no")
     private String outTradeNo;
     /**
@@ -71,8 +77,9 @@ public class WxPayParam extends WxPublicParam {
      * <p>
      * 类型：int
      */
+    @Size(min = 1, message = "请设置正确的订单总金额（total_fee）")
     @XmlNode(name = "total_fee")
-    private int totalFee;
+    private int totalFee = -1;
     /**
      * 用户端实际ip
      * <p>
@@ -80,6 +87,7 @@ public class WxPayParam extends WxPublicParam {
      * <p>
      * 类型：String(16)
      */
+    @Pattern(regexp = "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}", message = "请传入正确格式的用户端实际IP")
     @XmlNode(name = "spbill_create_ip")
     private String spbillCreateIp;
     /**
@@ -117,6 +125,7 @@ public class WxPayParam extends WxPublicParam {
      * <p>
      * 类型：String(256)
      */
+    @NotEmpty(message = "请传入正确的微信支付异步通知回调地址（notify_url）")
     @XmlNode(name = "notify_url")
     private String notifyUrl;
     /**
@@ -126,6 +135,8 @@ public class WxPayParam extends WxPublicParam {
      * <p>
      * 类型：String(16)
      */
+    @NotEmpty(message = "请传入支付类型（trade_type）")
+    @Pattern(regexp = "(JSAPI)|(NATIVE)|(APP)" , message = "请传入正确的支付类型")
     @XmlNode(name = "trade_type")
     private String tradeType = "APP";
     /**
