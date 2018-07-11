@@ -320,6 +320,5 @@ public class PayServiceTest {
 
 注：
 - 当前仅有支付和退款接口，其他接口正在开发中。
-- 由于功能并不是太完善，所以并未发release，项目依赖两个私有包net和utils，这两个包的源码都在我的仓库中，可以自己把源码clone到本地然后打包安装，安装完毕后可以安装该包。
 
 [快速构建web项目能力（基于spring-boot的spring-mvc/jersey项目）](web.md)
