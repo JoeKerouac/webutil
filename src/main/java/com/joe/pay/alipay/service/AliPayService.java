@@ -11,7 +11,7 @@ import com.joe.utils.collection.CollectionUtil;
 import com.joe.utils.common.*;
 import com.joe.utils.parse.json.JsonParser;
 import com.joe.utils.secure.RSA;
-import com.joe.utils.secure.RSAType;
+import com.joe.utils.secure.RSASignType;
 import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,7 +58,7 @@ public class AliPayService extends AbstractPayService {
         super(prop);
         this.appid = prop.getAppid();
         this.privateKey = prop.getPrivateKey();
-        this.rsa = new RSA(privateKey, prop.getPublicKey(), RSAType.SHA256WithRSA);
+        this.rsa = new RSA(privateKey, prop.getPublicKey(), RSASignType.SHA256withRSA);
         this.notifyUrl = prop.getNotifyUrl();
         this.charset = Charset.defaultCharset().name();
         useSandbox(false);
@@ -240,10 +240,10 @@ public class AliPayService extends AbstractPayService {
      */
     private <T extends AliPublicResponse> void checkSign(T t, String sign) {
         String data = JSON_PARSER.toJson(t, true);
-        boolean check = rsa.check(data, sign);
+        boolean check = rsa.checkSign(data, sign);
         if (!check && data.contains("\\/")) {
             data = data.replace("\\/", "/");
-            check = rsa.check(data, sign);
+            check = rsa.checkSign(data, sign);
         }
         if (!check) {
             throw new CheckSignException("支付宝响应签名校验异常·");
@@ -264,7 +264,7 @@ public class AliPayService extends AbstractPayService {
         log.debug("数据[{}]转换的map数据为[{}]", param, map);
         String signData = FormDataBuilder.builder(true, map).data();
         log.debug("要签名的数据为：[{}]", signData);
-        String sign = rsa.encrypt(signData);
+        String sign = rsa.sign(signData);
         log.debug("签名为：[{}]", sign);
         map.put("sign", sign);
         return map;

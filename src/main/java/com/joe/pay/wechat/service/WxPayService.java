@@ -12,7 +12,7 @@ import com.joe.pay.wechat.pojo.*;
 import com.joe.utils.common.*;
 import com.joe.utils.parse.xml.XmlNode;
 import com.joe.utils.parse.xml.XmlParser;
-import com.joe.utils.secure.MD5;
+import com.joe.utils.secure.MessageDigestUtil;
 import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +32,7 @@ import static com.joe.utils.validator.ValidatorUtil.validate;
 public class WxPayService extends AbstractPayService {
     protected IHttpClientUtil wxClient;
     private static final XmlParser XML_PARSER = XmlParser.getInstance();
-    private static final MD5 MD_5 = new MD5();
+    private static final MessageDigestUtil MD_5 = new MessageDigestUtil(MessageDigestUtil.Algorithms.MD5);
     /**
      * appid
      */
@@ -325,7 +325,7 @@ public class WxPayService extends AbstractPayService {
         String signData = FormDataBuilder.builder(true, map).data();
         log.debug("要签名的数据为（不包含key）：[{}]", signData);
         signData += "&key=" + key;
-        String sign = MD_5.encrypt(signData).toUpperCase();
+        String sign = MD_5.digest(signData).toUpperCase();
         log.debug("签名为：[{}]", sign);
         map.put("sign", sign);
         return map;
