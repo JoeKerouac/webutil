@@ -2,6 +2,8 @@ package com.joe.pay;
 
 import com.joe.pay.pojo.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * 支付服务接口
  *
@@ -16,6 +18,14 @@ public interface PayService {
      * @return 支付结果
      */
     SysResponse<PayResponse> pay(PayRequest request);
+
+    /**
+     * 支付回调通知
+     *
+     * @param request 请求
+     * @return 通知的消息
+     */
+    PayNotify payNotify(HttpServletRequest request);
 
     /**
      * 申请退款

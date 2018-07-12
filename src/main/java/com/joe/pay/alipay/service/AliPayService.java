@@ -15,6 +15,7 @@ import com.joe.utils.secure.impl.SignatureUtilImpl;
 import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +114,11 @@ public class AliPayService extends AbstractPayService {
         publicParam.setBizContent(JSON_PARSER.toJson(payParam));
         Map<String, Object> map = sign(publicParam);
         return JSON_PARSER.toJson(map);
+    }
+
+    @Override
+    public PayNotify payNotify(HttpServletRequest request) {
+        return null;
     }
 
     @Override

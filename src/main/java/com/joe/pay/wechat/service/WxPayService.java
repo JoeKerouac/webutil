@@ -17,6 +17,8 @@ import com.joe.utils.secure.impl.MessageDigestUtilImpl;
 import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -147,6 +149,43 @@ public class WxPayService extends AbstractPayService {
     }
 
     @Override
+    public PayNotify payNotify(HttpServletRequest request) {
+        log.debug("开始处理微信回调响应");
+        WxPayNotify wxPayNotify = payNotifyInternal(request);
+        return convert(wxPayNotify, new PayNotify(), p -> {
+            PayNotify notify = new PayNotify();
+            notify.setAttach(p.getAttach());
+            notify.setCashFee(p.getCashFee());
+            notify.setOrderId(p.getTransactionId());
+            notify.setOutTradeNo(p.getOutTradeNo());
+            notify.setTradeType(p.getTradeType());
+            notify.setTotalFee(p.getTotalFee());
+            return notify;
+        });
+    }
+
+    /**
+     * 处理微信支付回调
+     *
+     * @param request 回调request
+     * @return 回调处理结果（会自动验签，验签失败会抛出异常）
+     */
+    public WxPayNotify payNotifyInternal(HttpServletRequest request) {
+        byte[] byteData;
+        try {
+            byteData = IOUtils.read(request.getInputStream());
+        } catch (IOException e) {
+            throw new PayException("从HttpServletRequest中读取数据失败", e);
+        }
+        String data = new String(byteData);
+        log.debug("微信支付回调消息为：[{}]", data);
+        WxPayNotify wxPayNotify = XML_PARSER.parse(data, WxPayNotify.class);
+        log.debug("微信支付回调消息解析为：[{}]", wxPayNotify);
+        checkSign(wxPayNotify);
+        return wxPayNotify;
+    }
+
+    @Override
     public SysResponse<RefundResponse> refund(RefundRequest request) {
         log.debug("对微信系统订单[{}]退款", request);
         WxRefundParam param = new WxRefundParam();
@@ -243,9 +282,7 @@ public class WxPayService extends AbstractPayService {
             String xmlResponse = wxClient.executePost(realMethod, data);
             log.debug("响应数据：[{}]", xmlResponse);
             R result = XML_PARSER.parse(xmlResponse, responseType);
-            if (!checkSign(result)) {
-                throw new CheckSignException("请求结果签名校验异常");
-            }
+            checkSign(result);
             return SysResponse.buildSuccess(result);
         } catch (PayException e) {
             log.error("请求数据[{}]，url：[{}]对应的响应签名校验异常", data, method, e);
@@ -263,19 +300,16 @@ public class WxPayService extends AbstractPayService {
      * @param <R>    结果实际类型
      * @return 校验签名结果，true表示签名校验通过
      */
-    private <R extends WxPublicResponse> boolean checkSign(R result) {
-        if (!isSuccess(result)) {
-            //请求不成功，不验签
-            return true;
-        }
-        Map<String, Object> map = sign(result);
-        String sysSign = String.valueOf(map.get("sign"));
-        String resultSign = result.getSign();
-        if (sysSign.equals(resultSign)) {
-            return true;
-        } else {
-            log.warn("系统签名为：[{}]；响应签名为：[{}]，签名不一致", sysSign, resultSign);
-            return false;
+    private <R extends WxPublicResponse> void checkSign(R result) {
+        log.debug("校验结果[{}]的签名", result);
+        if (isSuccess(result)) {
+            Map<String, Object> map = sign(result);
+            String sysSign = String.valueOf(map.get("sign"));
+            String resultSign = result.getSign();
+            if (!sysSign.equals(resultSign)) {
+                log.warn("系统签名为：[{}]；响应签名为：[{}]，签名不一致", sysSign, resultSign);
+                throw new CheckSignException("请求结果签名校验异常");
+            }
         }
     }
 
