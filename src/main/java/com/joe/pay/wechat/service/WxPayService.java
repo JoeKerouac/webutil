@@ -13,6 +13,7 @@ import com.joe.utils.common.*;
 import com.joe.utils.parse.xml.XmlNode;
 import com.joe.utils.parse.xml.XmlParser;
 import com.joe.utils.secure.MessageDigestUtil;
+import com.joe.utils.secure.impl.MessageDigestUtilImpl;
 import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,9 +31,9 @@ import static com.joe.utils.validator.ValidatorUtil.validate;
  */
 @Slf4j
 public class WxPayService extends AbstractPayService {
+    private static final MessageDigestUtil MD_5 = MessageDigestUtilImpl.buildInstance(MessageDigestUtil.Algorithms.MD5);
     protected IHttpClientUtil wxClient;
     private static final XmlParser XML_PARSER = XmlParser.getInstance();
-    private static final MessageDigestUtil MD_5 = new MessageDigestUtil(MessageDigestUtil.Algorithms.MD5);
     /**
      * appid
      */

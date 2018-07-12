@@ -10,8 +10,8 @@ import com.joe.pay.pojo.prop.AliPayProp;
 import com.joe.utils.collection.CollectionUtil;
 import com.joe.utils.common.*;
 import com.joe.utils.parse.json.JsonParser;
-import com.joe.utils.secure.RSA;
-import com.joe.utils.secure.RSASignType;
+import com.joe.utils.secure.SignatureUtil;
+import com.joe.utils.secure.impl.SignatureUtilImpl;
 import com.joe.utils.validator.ValidatorUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +32,10 @@ import static com.joe.utils.validator.ValidatorUtil.validate;
 @Slf4j
 public class AliPayService extends AbstractPayService {
     private static final JsonParser JSON_PARSER = JsonParser.getInstance();
-    private RSA rsa;
+    /**
+     * 签名用
+     */
+    private SignatureUtil signature;
     /**
      * 支付宝appid
      */
@@ -41,6 +44,10 @@ public class AliPayService extends AbstractPayService {
      * 支付宝商户私钥
      */
     private String privateKey;
+    /**
+     * 公钥
+     */
+    private String publicKey;
     /**
      * 回调URL
      */
@@ -58,7 +65,8 @@ public class AliPayService extends AbstractPayService {
         super(prop);
         this.appid = prop.getAppid();
         this.privateKey = prop.getPrivateKey();
-        this.rsa = new RSA(privateKey, prop.getPublicKey(), RSASignType.SHA256withRSA);
+        this.publicKey = prop.getPublicKey();
+        this.signature = SignatureUtilImpl.buildInstance(privateKey, publicKey, SignatureUtil.Algorithms.SHA256withRSA);
         this.notifyUrl = prop.getNotifyUrl();
         this.charset = Charset.defaultCharset().name();
         useSandbox(false);
@@ -121,12 +129,12 @@ public class AliPayService extends AbstractPayService {
 
         return sysResponse.conver(aliRefundResponse -> convert(aliRefundResponse, new RefundResponse(),
                 refundResponse -> {
-            RefundResponse response = new RefundResponse();
-            response.setOrderId(refundResponse.getTradeNo());
-            response.setOutTradeNo(refundResponse.getOutTradeNo());
-            response.setRefundFee((int) (refundResponse.getRefundFee() * 100));
-            return response;
-        }));
+                    RefundResponse response = new RefundResponse();
+                    response.setOrderId(refundResponse.getTradeNo());
+                    response.setOutTradeNo(refundResponse.getOutTradeNo());
+                    response.setRefundFee((int) (refundResponse.getRefundFee() * 100));
+                    return response;
+                }));
     }
 
     /**
@@ -240,10 +248,10 @@ public class AliPayService extends AbstractPayService {
      */
     private <T extends AliPublicResponse> void checkSign(T t, String sign) {
         String data = JSON_PARSER.toJson(t, true);
-        boolean check = rsa.checkSign(data, sign);
+        boolean check = signature.checkSign(data, sign);
         if (!check && data.contains("\\/")) {
             data = data.replace("\\/", "/");
-            check = rsa.checkSign(data, sign);
+            check = signature.checkSign(data, sign);
         }
         if (!check) {
             throw new CheckSignException("支付宝响应签名校验异常·");
@@ -264,7 +272,7 @@ public class AliPayService extends AbstractPayService {
         log.debug("数据[{}]转换的map数据为[{}]", param, map);
         String signData = FormDataBuilder.builder(true, map).data();
         log.debug("要签名的数据为：[{}]", signData);
-        String sign = rsa.sign(signData);
+        String sign = signature.sign(signData);
         log.debug("签名为：[{}]", sign);
         map.put("sign", sign);
         return map;
