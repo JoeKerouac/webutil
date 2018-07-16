@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class AliRefundResponseData implements AliResponseData<AliRefundResponse> {
     @JsonProperty("alipay_trade_refund_response")
     public AliRefundResponse alipayTradeRefundResponse;
-    public String sign;
+    public String            sign;
 
     @Override
     public AliRefundResponse getData() {

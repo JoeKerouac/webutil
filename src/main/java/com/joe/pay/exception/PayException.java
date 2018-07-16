@@ -6,7 +6,7 @@ package com.joe.pay.exception;
  * @author joe
  * @version 2018.07.02 11:06
  */
-public class PayException extends RuntimeException{
+public class PayException extends RuntimeException {
     public PayException() {
         super();
     }
@@ -23,7 +23,8 @@ public class PayException extends RuntimeException{
         super(cause);
     }
 
-    protected PayException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected PayException(String message, Throwable cause, boolean enableSuppression,
+                           boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

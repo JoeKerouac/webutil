@@ -1,12 +1,14 @@
 package com.joe.web.starter.core.prop;
 
+import java.util.Properties;
+
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
+
 import com.joe.web.starter.core.spi.SecureContext;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-
-import java.util.Properties;
 
 /**
  * web项目配置
@@ -17,67 +19,67 @@ import java.util.Properties;
 @ToString
 public class SysProp {
 
-    public static final int DEFAULT_MAX_SIZE = 512;
+    public static final int                      DEFAULT_MAX_SIZE       = 512;
     /**
      * jersey的扫描，扫描jersey的组件
      */
     @Getter
     @Setter
-    private String jerseyScan = "com.joe";
+    private String                               jerseyScan             = "com.joe";
     /**
      * 项目根路径，null、""、"/"视作等效，即项目根路径都是/
      */
     @Getter
     @Setter
-    private String root = "/";
+    private String                               root                   = "/";
     /**
      * 是否禁用jersey（禁用jersey后使用springMVC），true表示禁用，默认禁用，如果启用jersey请添加spring-boot-starter-jersey依赖
      */
     @Getter
     @Setter
-    private boolean disableJersey = true;
+    private boolean                              disableJersey          = true;
     /**
      * 是否允许跨域，默认不允许，只有在disableJersey等于false时生效
      */
     @Getter
     @Setter
-    private boolean enableCors = false;
+    private boolean                              enableCors             = false;
     /**
      * 跨域配置，只有在enableCors为true时才生效
      */
     @Getter
     @Setter
-    private String allowOrigin = "*";
+    private String                               allowOrigin            = "*";
     /**
      * 跨域配置，只有在enableCors为true时才生效
      */
     @Getter
     @Setter
-    private String allowMethods = "POST, GET, OPTIONS, DELETE";
+    private String                               allowMethods           = "POST, GET, OPTIONS, DELETE";
     /**
      * 跨域配置，只有在enableCors为true时才生效
      */
     @Getter
     @Setter
-    private String maxAge = "3600";
+    private String                               maxAge                 = "3600";
     /**
      * 跨域配置，只有在enableCors为true时才生效
      */
     @Getter
     @Setter
-    private String allowHeaders = "Accept, Origin, XRequestedWith, Content-Type, LastModified";
+    private String                               allowHeaders           = "Accept, Origin, XRequestedWith, Content-Type, LastModified";
     /**
      * 开启流量统计时最多打印多少byte内容，当小于等于0时使用默认值{@link #DEFAULT_MAX_SIZE}
      */
     @Getter
     @Setter
-    private int maxReadSize = DEFAULT_MAX_SIZE;
+    private int                                  maxReadSize            = DEFAULT_MAX_SIZE;
     /**
      * 是否禁用异常屏蔽，true表示禁用，如果禁用那么系统的异常信息将发送到前台
      */
     @Getter
     @Setter
-    private boolean disableExceptionMapper = false;
+    private boolean                              disableExceptionMapper = false;
     /**
      * 嵌入式web容器
      */
@@ -88,12 +90,11 @@ public class SysProp {
      * 安全上下文，如果要启动权限拦截那么需要通过enableAuthentication方法设置该值，并且需要启用jersey
      */
     @Getter
-    private SecureContext secureContext;
+    private SecureContext                        secureContext;
     /**
      * spring系统配置
      */
-    private final Properties properties;
-
+    private final Properties                     properties;
 
     public SysProp() {
         this.properties = new Properties();

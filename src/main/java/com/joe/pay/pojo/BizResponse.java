@@ -9,7 +9,7 @@ import lombok.Data;
  * @version 2018.07.06 10:52
  */
 @Data
-public class BizResponse implements Response{
+public class BizResponse implements Response {
     /**
      * 业务是否成功
      */
@@ -17,9 +17,9 @@ public class BizResponse implements Response{
     /**
      * 响应编码（失败的时候可以用）
      */
-    private String code;
+    private String  code;
     /**
      * 响应编码描述信息（失败的时候可以用）
      */
-    private String errMsg;
+    private String  errMsg;
 }

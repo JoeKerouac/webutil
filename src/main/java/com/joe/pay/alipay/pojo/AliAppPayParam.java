@@ -1,11 +1,13 @@
 package com.joe.pay.alipay.pojo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
-
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
 
 /**
  * app支付请求业务参数
@@ -22,7 +24,7 @@ public class AliAppPayParam implements BizContent {
      * <p>
      * 最大长度：128
      */
-    private String body;
+    private String       body;
     /**
      * 商品的标题/交易标题/订单标题/订单关键字等。
      * <p>
@@ -31,7 +33,7 @@ public class AliAppPayParam implements BizContent {
      * 最大长度：256
      */
     @NotEmpty(message = "订单标题不能为空")
-    private String subject;
+    private String       subject;
     /**
      * 商户网站唯一订单号
      * <p>
@@ -41,7 +43,7 @@ public class AliAppPayParam implements BizContent {
      */
     @NotEmpty(message = "商户订单号不能为空")
     @JsonProperty("out_trade_no")
-    private String outTradeNo;
+    private String       outTradeNo;
     /**
      * 该笔订单允许的最晚付款时间，逾期将关闭交易。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天（1c-当天的情况下，无论交易何时创建，都在0点关闭）。 该参数数值不接受小数点， 如 1.5h，可转换为 90m。
      * <p>
@@ -49,11 +51,10 @@ public class AliAppPayParam implements BizContent {
      * <p>
      * 最大长度：6
      */
-    @Pattern(regexp = "(((1[0-5]d)?|([1-9]d)?)(([1-9]\\d+h)?|([1-9]h)?)(([1-9]\\d+m)?|([1-9]m)?))|1c",
-            message = "订单最晚付款时间不符合规则")
+    @Pattern(regexp = "(((1[0-5]d)?|([1-9]d)?)(([1-9]\\d+h)?|([1-9]h)?)(([1-9]\\d+m)?|([1-9]m)?))|1c", message = "订单最晚付款时间不符合规则")
     @Size(max = 6)
     @JsonProperty("timeout_express")
-    private String timeoutExpress;
+    private String       timeoutExpress;
     /**
      * 订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]
      * <p>
@@ -63,7 +64,7 @@ public class AliAppPayParam implements BizContent {
      */
     @Pattern(regexp = "(([1-9]\\d*)|0)(\\.[0-1]{1,2})?", message = "订单金额不符合规范")
     @JsonProperty("total_amount")
-    private String totalAmount;
+    private String       totalAmount;
     /**
      * 销售产品码，商家和支付宝签约的产品码，为固定值QUICK_MSECURITY_PAY
      * <p>
@@ -81,7 +82,7 @@ public class AliAppPayParam implements BizContent {
      * 最大长度：2
      */
     @JsonProperty("goods_type")
-    private String goodsType;
+    private String       goodsType;
     /**
      * 公用回传参数，如果请求时传递了该参数，则返回给商户时会回传该参数。支付宝只会在同步返回（包括跳转回商户网站）和异步通知时将该参数原样返回。本参数必须进行UrlEncode之后才可以发送给支付宝。
      * <p>
@@ -90,7 +91,7 @@ public class AliAppPayParam implements BizContent {
      * 最大长度：512
      */
     @JsonProperty("passback_params")
-    private String passbackParams;
+    private String       passbackParams;
     /**
      * 优惠参数
      * <p>
@@ -101,14 +102,14 @@ public class AliAppPayParam implements BizContent {
      * 最大长度：512
      */
     @JsonProperty("promo_params")
-    private String promoParams;
+    private String       promoParams;
     /**
      * 业务扩展参数，字段参见{@link ExtendParams ExtendParams}
      * <p>
      * 可选
      */
     @JsonProperty("extend_params")
-    private String extendParams;
+    private String       extendParams;
     /**
      * 可用渠道，用户只能在指定渠道范围内支付，当有多个渠道时用“,”分隔
      * <p>
@@ -119,7 +120,7 @@ public class AliAppPayParam implements BizContent {
      * 最大长度：128
      */
     @JsonProperty("enable_pay_channels")
-    private String enablePayChannels;
+    private String       enablePayChannels;
     /**
      * 禁用渠道，用户不可用指定渠道支付，当有多个渠道时用“,”分隔
      * <p>
@@ -130,7 +131,7 @@ public class AliAppPayParam implements BizContent {
      * 最大长度：128
      */
     @JsonProperty("disable_pay_channels")
-    private String disablePayChannels;
+    private String       disablePayChannels;
     /**
      * 商户门店编号
      * <p>
@@ -139,7 +140,7 @@ public class AliAppPayParam implements BizContent {
      * 最大长度：32
      */
     @JsonProperty("store_id")
-    private String storeId;
+    private String       storeId;
 
     /**
      * 扩展参数

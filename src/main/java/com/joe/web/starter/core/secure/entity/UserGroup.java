@@ -1,8 +1,8 @@
 package com.joe.web.starter.core.secure.entity;
 
-import lombok.Data;
-
 import java.util.Set;
+
+import lombok.Data;
 
 /**
  * 群组
@@ -14,11 +14,11 @@ public class UserGroup {
     /**
      * 群组ID
      */
-    private String id;
+    private String    id;
     /**
      * 群组名称
      */
-    private String name;
+    private String    name;
     /**
      * 该组对应的权限集合
      */

@@ -9,7 +9,7 @@ import lombok.Data;
  * @version 2018.07.02 10:36
  */
 @Data
-public class PayRequest implements Request{
+public class PayRequest implements Request {
     /**
      * 商户网站唯一订单号
      */
@@ -31,11 +31,11 @@ public class PayRequest implements Request{
     /**
      * 支付时长，单位为秒，如果设置300就是五分钟，超过五分钟订单自动取消
      */
-    private int expire = 300;
+    private int    expire    = 300;
     /**
      * 订单金额，单位为分
      */
-    private int totalAmount;
+    private int    totalAmount;
     /**
      * 发起请求的用户的实际IP
      */

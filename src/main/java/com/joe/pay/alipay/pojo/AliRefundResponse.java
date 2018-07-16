@@ -1,6 +1,7 @@
 package com.joe.pay.alipay.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -19,54 +20,54 @@ public class AliRefundResponse extends AliPublicResponse {
      * 必填，最大长度64
      */
     @JsonProperty("out_trade_no")
-    private String outTradeNo;
+    private String        outTradeNo;
     /**
      * 支付宝交易号，和商户订单号不能同时为空
      * <p>
      * 必填，最大长度64
      */
     @JsonProperty("trade_no")
-    private String tradeNo;
+    private String        tradeNo;
     /**
      * 用户的登录id
      * <p>
      * 必填，最大长度100
      */
     @JsonProperty("buyer_logon_id")
-    private String buyerLogonId;
+    private String        buyerLogonId;
     /**
      * 本次退款是否发生了资金变化
      * <p>
      * 必填，最大长度1
      */
     @JsonProperty("fund_change")
-    private String fundChange;
+    private String        fundChange;
     /**
      * 退款总金额
      * <p>
      * 必填，最大长度1
      */
     @JsonProperty("refund_fee")
-    private Double refundFee;
+    private Double        refundFee;
     /**
      * 错误时有，暂时不知道有什么用
      */
     @JsonProperty("send_back_fee")
-    private Double sendBackFee;
+    private Double        sendBackFee;
     /**
      * 退款币种信息
      * <p>
      * 必填，最大长度8
      */
     @JsonProperty("refund_currency")
-    private String refundCurrency;
+    private String        refundCurrency;
     /**
      * 退款支付时间
      * <p>
      * 必填，最大长度32
      */
     @JsonProperty("gmt_refund_pay")
-    private String gmtRefundPay;
+    private String        gmtRefundPay;
     /**
      * 退款使用的资金渠道
      * <p>
@@ -80,35 +81,35 @@ public class AliRefundResponse extends AliPublicResponse {
      * 选填，最大长度512
      */
     @JsonProperty("store_name")
-    private String storeName;
+    private String        storeName;
     /**
      * 买家在支付宝的用户id
      * <p>
      * 选填，最大长度28
      */
     @JsonProperty("buyer_user_id")
-    private String buyerUserId;
+    private String        buyerUserId;
     /**
      * 本次退款金额中买家退款金额
      * <p>
      * 选填，最大长度11
      */
     @JsonProperty("present_refund_buyer_amount")
-    private String presentRefundBuyerAmount;
+    private String        presentRefundBuyerAmount;
     /**
      * 本次退款金额中平台优惠退款金额
      * <p>
      * 选填，最大长度11
      */
     @JsonProperty("present_refund_discount_amount")
-    private String presentRefundDiscountAmount;
+    private String        presentRefundDiscountAmount;
     /**
      * 本次退款金额中商家优惠退款金额
      * <p>
      * 选填，最大长度11
      */
     @JsonProperty("present_refund_mdiscount_amount")
-    private String presentRefundMdiscountAmount;
+    private String        presentRefundMdiscountAmount;
 
     @Data
     public class TradeFundBill {

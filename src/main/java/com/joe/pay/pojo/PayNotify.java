@@ -1,6 +1,7 @@
 package com.joe.pay.pojo;
 
 import com.joe.utils.parse.xml.XmlNode;
+
 import lombok.Data;
 
 /**
@@ -14,19 +15,19 @@ public class PayNotify extends BizResponse {
     /**
      * 商户订单号
      */
-    private String outTradeNo;
+    private String  outTradeNo;
     /**
      * 第三方订单号
      */
-    private String orderId;
+    private String  orderId;
     /**
      * 商家数据包，原样返回
      */
-    private String attach;
+    private String  attach;
     /**
      * 支付类型：APP、WEB（微信对应公众号，支付宝对应网页支付）
      */
-    private String tradeType = "APP";
+    private String  tradeType = "APP";
     /**
      * 订单总金额，单位为分
      */

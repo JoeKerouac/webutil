@@ -1,10 +1,11 @@
 package com.joe.pay.alipay.pojo;
 
+import java.nio.charset.Charset;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.joe.pay.pojo.Request;
-import lombok.Data;
 
-import java.nio.charset.Charset;
+import lombok.Data;
 
 /**
  * 阿里公共请求参数
@@ -55,7 +56,7 @@ public class AliPublicParam implements Request {
      * <p>
      * 最大长度：10
      */
-    private String charset = Charset.defaultCharset().name().toLowerCase();
+    private String charset  = Charset.defaultCharset().name().toLowerCase();
     /**
      * 商户生成签名字符串所使用的签名算法类型，目前支持RSA2和RSA，推荐使用RSA2
      * <p>
@@ -88,7 +89,7 @@ public class AliPublicParam implements Request {
      * <p>
      * 最大长度：3
      */
-    private String version = "1.0";
+    private String version  = "1.0";
     /**
      * 支付宝服务器主动通知商户服务器里指定的页面http/https路径。
      * <p>

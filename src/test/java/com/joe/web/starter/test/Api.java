@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 public class Api {
-    @RequestMapping(value = "/test", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "/test", method = { RequestMethod.POST, RequestMethod.GET })
     @ResponseBody
     public String test() {
         return "hello world";

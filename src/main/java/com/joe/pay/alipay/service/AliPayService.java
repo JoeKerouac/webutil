@@ -1,5 +1,15 @@
 package com.joe.pay.alipay.service;
 
+import static com.joe.pay.PayConst.*;
+import static com.joe.utils.validator.ValidatorUtil.validate;
+
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.joe.http.request.IHttpRequestBase;
 import com.joe.pay.AbstractPayService;
@@ -13,16 +23,8 @@ import com.joe.utils.parse.json.JsonParser;
 import com.joe.utils.secure.SignatureUtil;
 import com.joe.utils.secure.impl.SignatureUtilImpl;
 import com.joe.utils.validator.ValidatorUtil;
+
 import lombok.extern.slf4j.Slf4j;
-
-import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
-import static com.joe.pay.PayConst.*;
-import static com.joe.utils.validator.ValidatorUtil.validate;
 
 /**
  * 阿里支付服务
@@ -36,38 +38,39 @@ public class AliPayService extends AbstractPayService {
     /**
      * 签名用
      */
-    private SignatureUtil signature;
+    private SignatureUtil           signature;
     /**
      * 支付宝appid
      */
-    private String appid;
+    private String                  appid;
     /**
      * 支付宝商户私钥
      */
-    private String privateKey;
+    private String                  privateKey;
     /**
      * 公钥
      */
-    private String publicKey;
+    private String                  publicKey;
     /**
      * 回调URL
      */
-    private String notifyUrl;
+    private String                  notifyUrl;
     /**
      * 支付宝网关
      */
-    private String gateway;
+    private String                  gateway;
     /**
      * 字符集
      */
-    private String charset;
+    private String                  charset;
 
     public AliPayService(AliPayProp prop) {
         super(prop);
         this.appid = prop.getAppid();
         this.privateKey = prop.getPrivateKey();
         this.publicKey = prop.getPublicKey();
-        this.signature = SignatureUtilImpl.buildInstance(privateKey, publicKey, SignatureUtil.Algorithms.SHA256withRSA);
+        this.signature = SignatureUtilImpl.buildInstance(privateKey, publicKey,
+            SignatureUtil.Algorithms.SHA256withRSA);
         this.notifyUrl = prop.getNotifyUrl();
         this.charset = Charset.defaultCharset().name();
         useSandbox(false);
@@ -133,14 +136,14 @@ public class AliPayService extends AbstractPayService {
         SysResponse<AliRefundResponse> sysResponse = refund(param, null);
         log.debug("阿里系统支付退款订单退款结果：[{}]", sysResponse);
 
-        return sysResponse.conver(aliRefundResponse -> convert(aliRefundResponse, new RefundResponse(),
-                refundResponse -> {
-                    RefundResponse response = new RefundResponse();
-                    response.setOrderId(refundResponse.getTradeNo());
-                    response.setOutTradeNo(refundResponse.getOutTradeNo());
-                    response.setRefundFee((int) (refundResponse.getRefundFee() * 100));
-                    return response;
-                }));
+        return sysResponse.conver(aliRefundResponse -> convert(aliRefundResponse,
+            new RefundResponse(), refundResponse -> {
+                RefundResponse response = new RefundResponse();
+                response.setOrderId(refundResponse.getTradeNo());
+                response.setOutTradeNo(refundResponse.getOutTradeNo());
+                response.setRefundFee((int) (refundResponse.getRefundFee() * 100));
+                return response;
+            }));
     }
 
     /**
@@ -149,8 +152,8 @@ public class AliPayService extends AbstractPayService {
      * @param param           退款详情
      * @param goodsDetailList 退款商品列表，可以为空
      */
-    public SysResponse<AliRefundResponse> refund(AliRefundParam param, List<AliRefundParam.GoodsDetail>
-            goodsDetailList) {
+    public SysResponse<AliRefundResponse> refund(AliRefundParam param,
+                                                 List<AliRefundParam.GoodsDetail> goodsDetailList) {
         log.debug("阿里退款请求:[{}]:[{}]", param, goodsDetailList);
         validate(param);
         if (StringUtils.isEmptyAll(param.getOutTradeNo(), param.getTradeNo())) {
@@ -162,7 +165,8 @@ public class AliPayService extends AbstractPayService {
             param.setGoodsDetail(JSON_PARSER.toJson(goodsDetailList));
         }
 
-        SysResponse<AliRefundResponse> sysResponse = request(param, ALI_REFUND_METHOD, AliRefundResponseData.class);
+        SysResponse<AliRefundResponse> sysResponse = request(param, ALI_REFUND_METHOD,
+            AliRefundResponseData.class);
         log.debug("阿里支付退款订单退款结果：[{}]", sysResponse);
         return sysResponse;
     }
@@ -177,8 +181,8 @@ public class AliPayService extends AbstractPayService {
      * @param <R>             业务数据类型
      * @return 业务响应
      */
-    private <T extends AliPublicResponse, R extends BizResponse> R convert(T data, R r, Function<T, R>
-            successFunction) {
+    private <T extends AliPublicResponse, R extends BizResponse> R convert(T data, R r,
+                                                                           Function<T, R> successFunction) {
         R result;
         if ("10000".equals(data.getCode())) {
             result = successFunction.apply(data);
@@ -230,8 +234,8 @@ public class AliPayService extends AbstractPayService {
         log.debug("要发送的数据为：[{}]", data);
         try {
 
-            String result = DEFAULT_CLIENT.executePost(gateway, data, charset, charset, IHttpRequestBase
-                    .CONTENT_TYPE_FORM);
+            String result = DEFAULT_CLIENT.executePost(gateway, data, charset, charset,
+                IHttpRequestBase.CONTENT_TYPE_FORM);
             log.debug("请求数据[{}]的请求结果为：[{}]", data, result);
             D responseData = JSON_PARSER.readAsObject(result, type);
             //目前对responseData没有验签逻辑，需要添加验签逻辑

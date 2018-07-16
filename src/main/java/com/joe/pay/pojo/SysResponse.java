@@ -1,8 +1,8 @@
 package com.joe.pay.pojo;
 
-import lombok.Data;
-
 import java.util.function.Function;
+
+import lombok.Data;
 
 /**
  * 系统网络请求响应
@@ -15,7 +15,7 @@ public class SysResponse<T extends Response> {
     /**
      * 是否成功
      */
-    private boolean success;
+    private boolean   success;
     /**
      * 异常原因
      */
@@ -23,7 +23,7 @@ public class SysResponse<T extends Response> {
     /**
      * 实际响应数据
      */
-    private T data;
+    private T         data;
 
     /**
      * 构建成功响应

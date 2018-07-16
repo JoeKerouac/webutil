@@ -1,11 +1,13 @@
 package com.joe.pay.wechat.pojo;
 
-import com.joe.utils.parse.xml.XmlNode;
-import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
-
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
+import com.joe.utils.parse.xml.XmlNode;
+
+import lombok.Data;
 
 /**
  * 微信支付参数
@@ -69,7 +71,7 @@ public class WxPayParam extends WxPublicParam {
      * 类型：String(32)
      */
     @XmlNode(name = "fee_type")
-    private String feeType = "CNY";
+    private String feeType    = "CNY";
     /**
      * 订单总金额，单位为分
      * <p>
@@ -79,7 +81,7 @@ public class WxPayParam extends WxPublicParam {
      */
     @Size(min = 1, message = "请设置正确的订单总金额（total_fee）")
     @XmlNode(name = "total_fee")
-    private int totalFee = -1;
+    private int    totalFee   = -1;
     /**
      * 用户端实际ip
      * <p>
@@ -136,9 +138,9 @@ public class WxPayParam extends WxPublicParam {
      * 类型：String(16)
      */
     @NotEmpty(message = "请传入支付类型（trade_type）")
-    @Pattern(regexp = "(JSAPI)|(NATIVE)|(APP)" , message = "请传入正确的支付类型")
+    @Pattern(regexp = "(JSAPI)|(NATIVE)|(APP)", message = "请传入正确的支付类型")
     @XmlNode(name = "trade_type")
-    private String tradeType = "APP";
+    private String tradeType  = "APP";
     /**
      * no_credit--指定不能使用信用卡支付
      * <p>

@@ -1,8 +1,9 @@
 package com.joe.pay.pojo.prop;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * 阿里支付配置

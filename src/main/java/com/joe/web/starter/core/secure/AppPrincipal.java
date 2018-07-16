@@ -1,10 +1,8 @@
 package com.joe.web.starter.core.secure;
 
-
-import com.joe.web.starter.core.secure.entity.User;
-
 import java.security.Principal;
 
+import com.joe.web.starter.core.secure.entity.User;
 
 /**
  * 表示一个主体，可以用来表示任何实体，例如人、公司和一个登录ID

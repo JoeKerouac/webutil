@@ -2,6 +2,7 @@ package com.joe.pay.wechat.pojo;
 
 import com.joe.pay.pojo.Response;
 import com.joe.utils.parse.xml.XmlNode;
+
 import lombok.Data;
 
 /**

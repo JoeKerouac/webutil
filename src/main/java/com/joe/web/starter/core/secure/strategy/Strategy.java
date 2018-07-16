@@ -6,5 +6,5 @@ package com.joe.web.starter.core.secure.strategy;
  *
  */
 public interface Strategy {
-	Object execute();
+    Object execute();
 }

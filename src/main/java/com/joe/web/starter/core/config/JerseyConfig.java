@@ -1,17 +1,19 @@
 package com.joe.web.starter.core.config;
 
-import com.joe.web.starter.core.prop.SysProp;
-import lombok.extern.slf4j.Slf4j;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.ConfigurableApplicationContext;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
+
+import com.joe.web.starter.core.prop.SysProp;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * jersey配置
@@ -31,8 +33,8 @@ public class JerseyConfig extends ResourceConfig {
         log.debug("初始化jersey");
         //用spring的扫包代替jersey自带的扫包，jersey自带的扫包只能扫到当前项目的，扫不到jar包中的，所以用spring的代替jersey的
         //此处必须使用串行流，不能使用并行流，否则会死锁
-        Stream<Collection<Object>> springComponents = ScanConfig.JERSEY_COMPONENT.stream().map
-                (factory::getBeansWithAnnotation).map(Map::values);
+        Stream<Collection<Object>> springComponents = ScanConfig.JERSEY_COMPONENT.stream()
+            .map(factory::getBeansWithAnnotation).map(Map::values);
         Stream<Collection<Class<?>>> customComponents = Stream.of(COMPONENTS);
 
         log.info("注册jersey组件");

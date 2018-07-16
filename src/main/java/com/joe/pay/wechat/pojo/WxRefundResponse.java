@@ -1,6 +1,7 @@
 package com.joe.pay.wechat.pojo;
 
 import com.joe.utils.parse.xml.XmlNode;
+
 import lombok.Data;
 
 /**
@@ -45,28 +46,28 @@ public class WxRefundResponse extends WxPublicResponse {
      * 必填
      */
     @XmlNode(name = "refund_fee")
-    private int refundFee;
+    private int    refundFee;
     /**
      * 应结退款金额，单位为分
      * <p>
      * 选填
      */
     @XmlNode(name = "settlement_refund_fee")
-    private int settlementRefundFee;
+    private int    settlementRefundFee;
     /**
      * 标价金额，单位为分
      * <p>
      * 必填
      */
     @XmlNode(name = "total_fee")
-    private int totalFee;
+    private int    totalFee;
     /**
      * 应结订单金额，单位为分
      * <p>
      * 选填
      */
     @XmlNode(name = "settlement_total_fee")
-    private int settlementTotalFee;
+    private int    settlementTotalFee;
     /**
      * 标价币种
      * <p>
@@ -80,7 +81,7 @@ public class WxRefundResponse extends WxPublicResponse {
      * 必填
      */
     @XmlNode(name = "cash_fee")
-    private int cashFee;
+    private int    cashFee;
     /**
      * 现金支付币种
      * <p>
@@ -94,19 +95,19 @@ public class WxRefundResponse extends WxPublicResponse {
      * 选填
      */
     @XmlNode(name = "cash_refund_fee")
-    private int cashRefundFee;
+    private int    cashRefundFee;
     /**
      * 代金券退款总金额，单位为分
      * <p>
      * 选填
      */
     @XmlNode(name = "coupon_refund_fee")
-    private int couponRefundFee;
+    private int    couponRefundFee;
     /**
      * 退款代金券使用数量
      * <p>
      * 选填
      */
     @XmlNode(name = "coupon_refund_count")
-    private int couponRefundCount;
+    private int    couponRefundCount;
 }

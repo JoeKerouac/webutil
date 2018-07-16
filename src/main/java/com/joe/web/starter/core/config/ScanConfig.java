@@ -1,13 +1,14 @@
 package com.joe.web.starter.core.config;
 
-import javax.annotation.Priority;
-import javax.ws.rs.Path;
-import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.ext.Provider;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.annotation.Priority;
+import javax.ws.rs.Path;
+import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.ext.Provider;
 
 /**
  * 自定义扫描的类的集合

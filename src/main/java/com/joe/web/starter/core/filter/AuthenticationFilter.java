@@ -1,10 +1,6 @@
 package com.joe.web.starter.core.filter;
 
-import com.joe.web.starter.core.prop.SysProp;
-import com.joe.web.starter.core.secure.AppSecurityContext;
-import com.joe.web.starter.core.spi.SecureContext;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
@@ -15,7 +11,14 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
-import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.joe.web.starter.core.prop.SysProp;
+import com.joe.web.starter.core.secure.AppSecurityContext;
+import com.joe.web.starter.core.spi.SecureContext;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 权限验证拦截器（用户自己实现SecureContext）
@@ -30,8 +33,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Context
     private HttpServletRequest request;
     @Autowired
-    private SysProp prop;
-    private SecureContext context;
+    private SysProp            prop;
+    private SecureContext      context;
 
     @PostConstruct
     public void init() {
@@ -39,7 +42,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         this.context = prop.getSecureContext();
         log.info("权限验证拦截器初始化完毕");
     }
-
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {

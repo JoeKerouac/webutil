@@ -1,9 +1,10 @@
 package com.joe.pay.pojo;
 
-import lombok.Data;
+import javax.validation.constraints.Size;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.validation.constraints.Size;
+import lombok.Data;
 
 /**
  * 退款请求
@@ -34,14 +35,14 @@ public class RefundRequest {
      * 订单总金额，单位为分
      */
     @Size(min = 1)
-    private int totalFee;
+    private int    totalFee;
     /**
      * 退款金额，不能大于订单总金额
      * <p>
      * 注：多次退款总金额不能大于订单总金额
      */
     @Size(min = 1)
-    private int refundFee;
+    private int    refundFee;
     /**
      * 退款原因
      * <p>

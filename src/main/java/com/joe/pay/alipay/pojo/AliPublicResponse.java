@@ -2,6 +2,7 @@ package com.joe.pay.alipay.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.joe.pay.pojo.Response;
+
 import lombok.Data;
 
 /**

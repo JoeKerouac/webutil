@@ -1,11 +1,13 @@
 package com.joe.web.starter.core.config;
 
-import com.joe.utils.common.StringUtils;
-import com.joe.web.starter.core.prop.SysProp;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.stereotype.Component;
+
+import com.joe.utils.common.StringUtils;
+import com.joe.web.starter.core.prop.SysProp;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * container配置

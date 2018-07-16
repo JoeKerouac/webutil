@@ -1,8 +1,8 @@
 package com.joe.web.starter.core.secure.entity;
 
-import lombok.Data;
-
 import java.util.Set;
+
+import lombok.Data;
 
 @Data
 public class User {
@@ -10,19 +10,19 @@ public class User {
     /**
      * 角色ID
      */
-    private String id;
+    private String             id;
     /**
      * 角色名
      */
-    private String name;
+    private String             name;
     /**
      * 对应的权限集合
      */
-    private Set<Role> roles;
+    private Set<Role>          roles;
     /**
      * 加入的所有组的集合
      */
-    private Set<UserGroup> groups;
+    private Set<UserGroup>     groups;
 
     /**
      * 创建一个空对象

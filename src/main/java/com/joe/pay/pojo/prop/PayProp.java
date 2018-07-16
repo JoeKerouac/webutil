@@ -1,10 +1,11 @@
 package com.joe.pay.pojo.prop;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * 支付配置
@@ -19,21 +20,21 @@ public class PayProp {
      * 支付模式
      */
     @NotNull(message = "支付模式不能为空")
-    private PayMode mode;
+    private PayMode     mode;
     /**
      * appid
      */
     @NotEmpty(message = "请提供appid")
-    private String appid;
+    private String      appid;
     /**
      * 支付异步回调通知地址
      */
     @NotEmpty(message = "请提供notifyUrl")
-    private String notifyUrl;
+    private String      notifyUrl;
     /**
      * 环境信息，为空时默认使用PROD
      */
-    private Environment environment =  Environment.PROD;
+    private Environment environment = Environment.PROD;
 
     PayProp(PayMode mode) {
         this.mode = mode;
@@ -48,12 +49,12 @@ public class PayProp {
          * appid
          */
         @NotEmpty(message = "appid不能为空")
-        private String appid;
+        private String      appid;
         /**
          * 支付异步回调通知地址
          */
         @NotEmpty(message = "notifyUrl不能为空")
-        private String notifyUrl;
+        private String      notifyUrl;
         /**
          * 环境信息，为空时默认使用PROD
          */
@@ -106,7 +107,7 @@ public class PayProp {
         }
 
         public PayPropBuilder environment(Environment environment) {
-            this.environment = environment == null ? Environment.PROD: environment;
+            this.environment = environment == null ? Environment.PROD : environment;
             return this;
         }
 
@@ -122,13 +123,13 @@ public class PayProp {
      * 支付模式（后缀SANDBOX的为沙箱模式）
      */
     public enum PayMode {
-        ALIAPP, WECHAT
+                         ALIAPP, WECHAT
     }
 
     /**
      * 环境信息，PROD表示生产，SANDBOX表示沙箱，如果对应的支付服务支持沙箱模式那么会进入沙箱模式
      */
     public enum Environment {
-        PROD, SANDBOX
+                             PROD, SANDBOX
     }
 }

@@ -1,6 +1,5 @@
 package com.joe.web.starter.core.ext;
 
-import com.joe.web.starter.core.prop.SysProp;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -8,13 +7,16 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import com.joe.web.starter.core.prop.SysProp;
+
 /**
  * 自定义bean处理器
  *
  * @author joe
  * @version 2018.02.02 11:00
  */
-public class JerseySpringBeanScannerConfigurer implements BeanFactoryPostProcessor, ApplicationContextAware {
+public class JerseySpringBeanScannerConfigurer implements BeanFactoryPostProcessor,
+                                               ApplicationContextAware {
     private ApplicationContext applicationContext;
 
     @Override

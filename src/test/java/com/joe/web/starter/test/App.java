@@ -1,13 +1,15 @@
 package com.joe.web.starter.test;
 
+import java.util.Collections;
+
+import org.springframework.context.annotation.ComponentScan;
+
 import com.joe.web.starter.WebApplication;
 import com.joe.web.starter.core.prop.SysProp;
 import com.joe.web.starter.core.secure.entity.Role;
 import com.joe.web.starter.core.secure.entity.User;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.ComponentScan;
 
-import java.util.Collections;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 测试主类

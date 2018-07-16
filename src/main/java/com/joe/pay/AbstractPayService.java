@@ -1,9 +1,9 @@
 package com.joe.pay;
 
+import static com.joe.utils.validator.ValidatorUtil.validate;
+
 import com.joe.http.IHttpClientUtil;
 import com.joe.pay.pojo.prop.PayProp;
-
-import static com.joe.utils.validator.ValidatorUtil.validate;
 
 /**
  * 抽象支付服务类
@@ -16,7 +16,7 @@ public abstract class AbstractPayService implements PayService {
     /**
      * 当前是否是沙箱，true表示是，false表示不是
      */
-    protected boolean sandbox;
+    protected boolean                      sandbox;
 
     public AbstractPayService(PayProp prop) {
         //验证参数

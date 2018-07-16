@@ -6,7 +6,7 @@ package com.joe.pay.exception;
  * @author joe
  * @version 2018.07.02 11:07
  */
-public class CheckSignException extends PayException{
+public class CheckSignException extends PayException {
     public CheckSignException() {
         super();
     }
@@ -23,8 +23,8 @@ public class CheckSignException extends PayException{
         super(cause);
     }
 
-    protected CheckSignException(String message, Throwable cause, boolean enableSuppression, boolean
-            writableStackTrace) {
+    protected CheckSignException(String message, Throwable cause, boolean enableSuppression,
+                                 boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

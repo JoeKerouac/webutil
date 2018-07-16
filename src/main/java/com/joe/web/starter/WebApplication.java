@@ -1,12 +1,8 @@
 package com.joe.web.starter;
 
-import com.joe.utils.ext.DocumentRootHelper;
-import com.joe.web.starter.core.config.JerseyConfig;
-import com.joe.web.starter.core.ext.JerseySpringBeanScannerConfigurer;
-import com.joe.web.starter.core.filter.CorsControllerFilter;
-import com.joe.web.starter.core.filter.SystemExceptionMapper;
-import com.joe.web.starter.core.prop.SysProp;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
@@ -19,8 +15,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.joe.utils.ext.DocumentRootHelper;
+import com.joe.web.starter.core.config.JerseyConfig;
+import com.joe.web.starter.core.ext.JerseySpringBeanScannerConfigurer;
+import com.joe.web.starter.core.filter.CorsControllerFilter;
+import com.joe.web.starter.core.filter.SystemExceptionMapper;
+import com.joe.web.starter.core.prop.SysProp;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 启动类
@@ -36,9 +38,8 @@ public class WebApplication {
     /**
      * 嵌入式web容器的class集合
      */
-    private static final Class<? extends ConfigurableEmbeddedServletContainer>[] embeddedServletContainerClass = new
-            Class[3];
-    private static SysProp sysProp;
+    private static final Class<? extends ConfigurableEmbeddedServletContainer>[] embeddedServletContainerClass = new Class[3];
+    private static SysProp                                                       sysProp;
 
     static {
         embeddedServletContainerClass[0] = TomcatEmbeddedServletContainerFactory.class;
@@ -65,7 +66,8 @@ public class WebApplication {
      * @param args   参数
      * @return ConfigurableApplicationContext
      */
-    public static ConfigurableApplicationContext runWeb(Object source, SysProp prop, String[] args) {
+    public static ConfigurableApplicationContext runWeb(Object source, SysProp prop,
+                                                        String[] args) {
         WebApplication.sysProp = prop;
 
         List<Object> sources = new ArrayList<>();
@@ -103,7 +105,8 @@ public class WebApplication {
             log.warn("jersey被禁用，将采用springMVC");
         }
 
-        SpringApplication application = new SpringApplication(sources.toArray(new Object[sources.size()]));
+        SpringApplication application = new SpringApplication(
+            sources.toArray(new Object[sources.size()]));
         //Spring配置
         application.setDefaultProperties(WebApplication.sysProp.getProperties());
         return application.run(args);
@@ -121,7 +124,8 @@ public class WebApplication {
      */
     @Bean
     EmbeddedServletContainerFactory embeddedServletContainerFactory(SysProp sysProp) {
-        ConfigurableEmbeddedServletContainer factory = sysProp.getConfigurableEmbeddedServletContainer();
+        ConfigurableEmbeddedServletContainer factory = sysProp
+            .getConfigurableEmbeddedServletContainer();
         if (factory == null) {
             for (Class<? extends ConfigurableEmbeddedServletContainer> clazz : embeddedServletContainerClass) {
                 try {

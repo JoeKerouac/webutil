@@ -1,8 +1,8 @@
 package com.joe.pay.alipay.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * 阿里退款参数
@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  * @version 2018.07.05 18:09
  */
 @Data
-public class AliRefundParam implements BizContent{
+public class AliRefundParam implements BizContent {
     /**
      * 订单支付时传入的商户订单号,不能和 trade_no同时为空。
      */
@@ -110,7 +110,7 @@ public class AliRefundParam implements BizContent{
          * <p>
          * 必填，最大10位
          */
-        private int quantity;
+        private int    quantity;
         /**
          * 商品单价，单位为元
          * <p>

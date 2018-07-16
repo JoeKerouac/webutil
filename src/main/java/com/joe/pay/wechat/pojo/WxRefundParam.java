@@ -1,6 +1,7 @@
 package com.joe.pay.wechat.pojo;
 
 import com.joe.utils.parse.xml.XmlNode;
+
 import lombok.Data;
 
 /**
@@ -38,12 +39,12 @@ public class WxRefundParam extends WxPublicParam {
      * 订单金额，单位为分
      */
     @XmlNode(name = "total_fee")
-    private int totalFee;
+    private int    totalFee;
     /**
      * 退款金额，单位为分
      */
     @XmlNode(name = "refund_fee")
-    private int refundFee;
+    private int    refundFee;
     /**
      * 退款货币种类
      * <p>

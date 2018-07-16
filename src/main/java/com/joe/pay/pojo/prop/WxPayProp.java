@@ -1,10 +1,11 @@
 package com.joe.pay.pojo.prop;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import java.io.InputStream;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
-import java.io.InputStream;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * 微信支付配置
@@ -19,11 +20,11 @@ public final class WxPayProp extends PayProp {
      * 商户ID
      */
     @NotEmpty(message = "请提供mchId")
-    private String mchId;
+    private String      mchId;
     /**
      * 证书密码（微信默认证书密码就是mchid）
      */
-    private String password;
+    private String      password;
     /**
      * 微信证书输入流，退款的时候会用到证书，要求PKCS12格式
      * <p>
@@ -34,7 +35,7 @@ public final class WxPayProp extends PayProp {
      * 商户平台设置的密钥key
      */
     @NotEmpty(message = "请提供商户平台设置的key")
-    private String key;
+    private String      key;
 
     private WxPayProp() {
         super(PayMode.WECHAT);
@@ -44,11 +45,11 @@ public final class WxPayProp extends PayProp {
         /**
          * 商户ID
          */
-        private String mchId;
+        private String      mchId;
         /**
          * 证书密码（微信默认证书密码就是mchid）
          */
-        private String password;
+        private String      password;
         /**
          * 微信证书输入流，退款的时候会用到证书，要求PKCS12格式
          * <p>
@@ -58,7 +59,7 @@ public final class WxPayProp extends PayProp {
         /**
          * 商户平台设置的密钥key
          */
-        private String key;
+        private String      key;
 
         WxPayPropBuilder() {
 

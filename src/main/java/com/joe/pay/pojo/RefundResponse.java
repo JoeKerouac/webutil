@@ -23,5 +23,5 @@ public class RefundResponse extends BizResponse {
     /**
      * 退款金额，单位为分
      */
-    private int refundFee;
+    private int    refundFee;
 }

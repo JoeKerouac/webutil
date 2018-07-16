@@ -1,16 +1,16 @@
 package com.joe.web.starter.core.secure;
 
-import com.joe.web.starter.core.secure.entity.Role;
-import com.joe.web.starter.core.secure.entity.User;
-import com.joe.web.starter.core.secure.entity.UserGroup;
-import org.glassfish.jersey.server.SubjectSecurityContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.util.Set;
 
+import org.glassfish.jersey.server.SubjectSecurityContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.joe.web.starter.core.secure.entity.Role;
+import com.joe.web.starter.core.secure.entity.User;
+import com.joe.web.starter.core.secure.entity.UserGroup;
 
 /**
  * 权限上下文
@@ -20,8 +20,8 @@ import java.util.Set;
  */
 public class AppSecurityContext implements SubjectSecurityContext {
     private static final Logger logger = LoggerFactory.getLogger("Authorization");
-    private User user;
-    private AppPrincipal principal;
+    private User                user;
+    private AppPrincipal        principal;
 
     public AppSecurityContext(User user) {
         setUser(user);
@@ -48,8 +48,8 @@ public class AppSecurityContext implements SubjectSecurityContext {
      */
     @Override
     public boolean isUserInRole(String role) {
-//        ForbiddenException
-//        MappableException
+        //        ForbiddenException
+        //        MappableException
         logger.info("开始验证权限，需要的权限为：{}", role);
         if (user == null || User.UNDEFINED_USER.equals(user.getName())) {
             logger.error("角色未定义");

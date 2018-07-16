@@ -1,8 +1,8 @@
 package com.joe.web.starter.core.spi;
 
-import com.joe.web.starter.core.secure.entity.User;
-
 import javax.servlet.http.HttpSession;
+
+import com.joe.web.starter.core.secure.entity.User;
 
 /**
  * 安全上下文，启用权限拦截需要（使用@RolesAllowed注解）

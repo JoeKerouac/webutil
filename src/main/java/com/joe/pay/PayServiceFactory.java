@@ -1,13 +1,13 @@
 package com.joe.pay;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.joe.pay.alipay.service.AliPayService;
 import com.joe.pay.pojo.prop.AliPayProp;
 import com.joe.pay.pojo.prop.PayProp;
 import com.joe.pay.pojo.prop.WxPayProp;
 import com.joe.pay.wechat.service.WxPayService;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 支付服务工厂
