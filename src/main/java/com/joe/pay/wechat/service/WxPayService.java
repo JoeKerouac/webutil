@@ -122,7 +122,21 @@ public class WxPayService extends AbstractPayService {
             DateUtil.DateUnit.SECOND, param.getExpire(), param.getCreateTime(), DateUtil.BASE)));
         wxPayParam.setNotifyUrl(notifyUrl);
         wxPayParam.setOpenid(param.getOpenid());
-        wxPayParam.setTradeType(param.getTradeType());
+        String tradeType;
+        switch (param.getTradeType()) {
+            case PC:
+            case H5:
+                tradeType = "WEB";
+                break;
+            case IOS:
+            case ANDROID:
+                tradeType = "APP";
+                break;
+            default:
+                throw new PayException(
+                    StringUtils.format("未知TradeType类型:[{}]", param.getTradeType()));
+        }
+        wxPayParam.setTradeType(tradeType);
         wxPayParam.setAttach(param.getAttach());
 
         log.debug("系统订单[{}]转换为了微信订单：[{}]", param, wxPayParam);
