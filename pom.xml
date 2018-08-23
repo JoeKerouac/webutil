@@ -50,6 +50,7 @@
             <groupId>com.github.JoeKerouac</groupId>
             <artifactId>utils</artifactId>
         </dependency>
+        <!--支付需要用到-->
         <dependency>
             <groupId>com.github.JoeKerouac</groupId>
             <artifactId>net</artifactId>
