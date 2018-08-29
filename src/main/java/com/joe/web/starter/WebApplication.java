@@ -38,10 +38,11 @@ public class WebApplication {
     /**
      * 嵌入式web容器的class集合
      */
-    private static final Class<? extends ConfigurableEmbeddedServletContainer>[] embeddedServletContainerClass = new Class[3];
+    private static final Class<? extends ConfigurableEmbeddedServletContainer>[] embeddedServletContainerClass;
     private static SysProp                                                       sysProp;
 
     static {
+        embeddedServletContainerClass = new Class[3];
         embeddedServletContainerClass[0] = TomcatEmbeddedServletContainerFactory.class;
         embeddedServletContainerClass[1] = JettyEmbeddedServletContainerFactory.class;
         embeddedServletContainerClass[2] = UndertowEmbeddedServletContainerFactory.class;
@@ -114,7 +115,7 @@ public class WebApplication {
 
     @Bean
     SysProp sysProp() {
-        return this.sysProp;
+        return WebApplication.sysProp;
     }
 
     /**
