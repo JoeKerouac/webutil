@@ -52,6 +52,27 @@ public class WebApplication {
      * 运行web程序（依赖：需要一个名叫Statistics的logger用来打印统计信息）
      *
      * @param source 用户主类
+     * @return ConfigurableApplicationContext
+     */
+    public static ConfigurableApplicationContext runWeb(Object source) {
+        return runWeb(source, null, null);
+    }
+
+    /**
+     * 运行web程序（依赖：需要一个名叫Statistics的logger用来打印统计信息）
+     *
+     * @param source 用户主类
+     * @param prop   系统配置
+     * @return ConfigurableApplicationContext
+     */
+    public static ConfigurableApplicationContext runWeb(Object source, SysProp prop) {
+        return runWeb(source, prop, null);
+    }
+
+    /**
+     * 运行web程序（依赖：需要一个名叫Statistics的logger用来打印统计信息）
+     *
+     * @param source 用户主类
      * @param args   参数
      * @return ConfigurableApplicationContext
      */
@@ -75,6 +96,10 @@ public class WebApplication {
         sources.add(WebApplication.class);
         if (source != null) {
             sources.add(source);
+        }
+
+        if (args == null) {
+            args = new String[0];
         }
 
         log.debug("Spring source 为：{}", sources);
@@ -106,8 +131,7 @@ public class WebApplication {
             log.warn("jersey被禁用，将采用springMVC");
         }
 
-        SpringApplication application = new SpringApplication(
-            sources.toArray(new Object[sources.size()]));
+        SpringApplication application = new SpringApplication(sources.toArray(new Object[0]));
         //Spring配置
         application.setDefaultProperties(WebApplication.sysProp.getProperties());
         return application.run(args);

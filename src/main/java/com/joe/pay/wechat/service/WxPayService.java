@@ -21,6 +21,7 @@ import com.joe.pay.wechat.pojo.*;
 import com.joe.utils.common.*;
 import com.joe.utils.parse.xml.XmlNode;
 import com.joe.utils.parse.xml.XmlParser;
+import com.joe.utils.reflect.BeanUtils;
 import com.joe.utils.secure.MessageDigestUtil;
 import com.joe.utils.secure.impl.MessageDigestUtilImpl;
 import com.joe.utils.validator.ValidatorUtil;

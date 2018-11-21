@@ -8,8 +8,8 @@ import javax.ws.rs.Path;
  * @author joe
  * @version 2018.03.19 16:33
  */
-@Path("jersey")
-public class JerseyApi {
+@Path("api")
+public class JerseyApi implements Api {
     @RolesAllowed("user")
     @GET
     @Path("hello")

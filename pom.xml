@@ -55,6 +55,12 @@
             <groupId>com.github.JoeKerouac</groupId>
             <artifactId>net</artifactId>
         </dependency>
+        <!--测试使用-->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
