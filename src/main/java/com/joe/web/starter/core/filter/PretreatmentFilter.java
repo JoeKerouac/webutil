@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.joe.utils.common.DateUtil;
-import com.joe.utils.parse.json.JsonParser;
+import com.joe.utils.serialize.json.JsonParser;
 import com.joe.web.starter.core.dto.InterfaceInfo;
 import com.joe.web.starter.core.prop.SysProp;
 

@@ -1,6 +1,6 @@
 package com.joe.pay.wechat.pojo;
 
-import com.joe.utils.parse.xml.XmlNode;
+import com.joe.utils.serialize.xml.XmlNode;
 
 import lombok.Data;
 import lombok.ToString;

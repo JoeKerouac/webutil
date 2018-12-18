@@ -5,7 +5,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.joe.utils.parse.xml.XmlNode;
+import com.joe.utils.serialize.xml.XmlNode;
 
 import lombok.Data;
 

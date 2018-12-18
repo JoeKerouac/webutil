@@ -22,7 +22,7 @@ import com.joe.utils.common.DateUtil;
 import com.joe.utils.common.FormDataBuilder;
 import com.joe.utils.common.StringUtils;
 import com.joe.utils.common.Tools;
-import com.joe.utils.parse.json.JsonParser;
+import com.joe.utils.serialize.json.JsonParser;
 import com.joe.utils.reflect.BeanUtils;
 import com.joe.utils.secure.SignatureUtil;
 import com.joe.utils.secure.impl.SignatureUtilImpl;
