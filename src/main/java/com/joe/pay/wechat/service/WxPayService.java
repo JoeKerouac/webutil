@@ -135,7 +135,7 @@ public class WxPayService extends AbstractPayService {
                 break;
             default:
                 throw new PayException(
-                    StringUtils.format("未知TradeType类型:[{}]", param.getTradeType()));
+                    StringUtils.format("未知TradeType类型:[{0}]", param.getTradeType()));
         }
         wxPayParam.setTradeType(tradeType);
         wxPayParam.setAttach(param.getAttach());
