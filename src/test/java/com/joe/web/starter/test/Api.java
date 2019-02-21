@@ -10,5 +10,5 @@ public interface Api {
      *
      * @return 返回固定值hello
      */
-    String hello() ;
+    String hello();
 }

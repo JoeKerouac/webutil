@@ -1,5 +1,3 @@
-
-
 /**
  * 发起网络请求（依赖jquery）
  * @param setting 参数列表，包含url、data、async（Boolean，是否异步，默认异步）、type（请求类型，默认GET）、contentType（
