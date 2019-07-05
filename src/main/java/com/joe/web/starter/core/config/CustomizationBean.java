@@ -4,7 +4,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.stereotype.Component;
 
-import com.joe.utils.common.StringUtils;
+import com.joe.utils.common.string.StringUtils;
 import com.joe.web.starter.core.prop.SysProp;
 
 import lombok.extern.slf4j.Slf4j;

@@ -20,7 +20,7 @@ import com.joe.pay.pojo.prop.AliPayProp;
 import com.joe.utils.collection.CollectionUtil;
 import com.joe.utils.common.DateUtil;
 import com.joe.utils.common.FormDataBuilder;
-import com.joe.utils.common.StringUtils;
+import com.joe.utils.common.string.StringUtils;
 import com.joe.utils.common.Tools;
 import com.joe.utils.reflect.BeanUtils;
 import com.joe.utils.secure.SignatureUtil;
