@@ -18,7 +18,11 @@ import com.joe.pay.exception.PayException;
 import com.joe.pay.pojo.*;
 import com.joe.pay.pojo.prop.WxPayProp;
 import com.joe.pay.wechat.pojo.*;
-import com.joe.utils.common.*;
+import com.joe.utils.common.DateUtil;
+import com.joe.utils.common.FormDataBuilder;
+import com.joe.utils.common.IOUtils;
+import com.joe.utils.common.Tools;
+import com.joe.utils.common.string.StringFormater;
 import com.joe.utils.common.string.StringUtils;
 import com.joe.utils.reflect.BeanUtils;
 import com.joe.utils.secure.MessageDigestUtil;
@@ -136,7 +140,7 @@ public class WxPayService extends AbstractPayService {
                 break;
             default:
                 throw new PayException(
-                    StringUtils.format("未知TradeType类型:[{0}]", param.getTradeType()));
+                    StringFormater.simpleFormat("未知TradeType类型:[{0}]", param.getTradeType()));
         }
         wxPayParam.setTradeType(tradeType);
         wxPayParam.setAttach(param.getAttach());
