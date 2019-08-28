@@ -1,6 +1,6 @@
 package com.joe.pay;
 
-import static com.joe.utils.validator.ValidatorUtil.validate;
+import static com.joe.utils.validation.ValidatorUtil.validate;
 
 import com.joe.http.IHttpClientUtil;
 import com.joe.pay.pojo.prop.PayProp;

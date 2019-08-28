@@ -1,7 +1,7 @@
 package com.joe.pay.wechat.service;
 
 import static com.joe.pay.PayConst.*;
-import static com.joe.utils.validator.ValidatorUtil.validate;
+import static com.joe.utils.validation.ValidatorUtil.validate;
 
 import java.io.IOException;
 import java.util.Map;
@@ -29,7 +29,7 @@ import com.joe.utils.secure.MessageDigestUtil;
 import com.joe.utils.secure.impl.MessageDigestUtilImpl;
 import com.joe.utils.serialize.xml.XmlNode;
 import com.joe.utils.serialize.xml.XmlParser;
-import com.joe.utils.validator.ValidatorUtil;
+import com.joe.utils.validation.ValidatorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

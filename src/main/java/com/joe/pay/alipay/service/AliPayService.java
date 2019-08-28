@@ -1,7 +1,7 @@
 package com.joe.pay.alipay.service;
 
 import static com.joe.pay.PayConst.*;
-import static com.joe.utils.validator.ValidatorUtil.validate;
+import static com.joe.utils.validation.ValidatorUtil.validate;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -26,7 +26,7 @@ import com.joe.utils.reflect.BeanUtils;
 import com.joe.utils.secure.SignatureUtil;
 import com.joe.utils.secure.impl.SignatureUtilImpl;
 import com.joe.utils.serialize.json.JsonParser;
-import com.joe.utils.validator.ValidatorUtil;
+import com.joe.utils.validation.ValidatorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
