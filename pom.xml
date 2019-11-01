@@ -21,9 +21,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git@github.com:JoeKerouac/webutil.git</connection>
-        <developerConnection>scm:git@github.com:JoeKerouac/webutil.git</developerConnection>
         <url>https://github.com/JoeKerouac/webutil</url>
+        <connection>scm:git:https://github.com/JoeKerouac/webutil.git</connection>
+        <developerConnection>scm:git:https://github.com/JoeKerouac/webutil.git</developerConnection>
     </scm>
 
     <developers>
