@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -38,14 +38,15 @@ public class WebApplication {
     /**
      * 嵌入式web容器的class集合
      */
-    private static final Class<? extends ConfigurableEmbeddedServletContainer>[] embeddedServletContainerClass;
-    private static SysProp                                                       sysProp;
+    private static final Class<? extends ServletWebServerFactory>[] embeddedServletContainerClass;
+    private static SysProp                                          sysProp;
 
     static {
         embeddedServletContainerClass = new Class[3];
-        embeddedServletContainerClass[0] = TomcatEmbeddedServletContainerFactory.class;
-        embeddedServletContainerClass[1] = JettyEmbeddedServletContainerFactory.class;
-        embeddedServletContainerClass[2] = UndertowEmbeddedServletContainerFactory.class;
+
+        embeddedServletContainerClass[0] = TomcatServletWebServerFactory.class;
+        embeddedServletContainerClass[1] = JettyServletWebServerFactory.class;
+        embeddedServletContainerClass[2] = UndertowServletWebServerFactory.class;
     }
 
     /**
@@ -54,7 +55,7 @@ public class WebApplication {
      * @param source 用户主类
      * @return ConfigurableApplicationContext
      */
-    public static ConfigurableApplicationContext runWeb(Object source) {
+    public static ConfigurableApplicationContext runWeb(Class<?> source) {
         return runWeb(source, null, null);
     }
 
@@ -65,7 +66,7 @@ public class WebApplication {
      * @param prop   系统配置
      * @return ConfigurableApplicationContext
      */
-    public static ConfigurableApplicationContext runWeb(Object source, SysProp prop) {
+    public static ConfigurableApplicationContext runWeb(Class<?> source, SysProp prop) {
         return runWeb(source, prop, null);
     }
 
@@ -76,7 +77,7 @@ public class WebApplication {
      * @param args   参数
      * @return ConfigurableApplicationContext
      */
-    public static ConfigurableApplicationContext runWeb(Object source, String[] args) {
+    public static ConfigurableApplicationContext runWeb(Class<?> source, String[] args) {
         return runWeb(source, null, args);
     }
 
@@ -88,11 +89,11 @@ public class WebApplication {
      * @param args   参数
      * @return ConfigurableApplicationContext
      */
-    public static ConfigurableApplicationContext runWeb(Object source, SysProp prop,
+    public static ConfigurableApplicationContext runWeb(Class<?> source, SysProp prop,
                                                         String[] args) {
         WebApplication.sysProp = prop;
 
-        List<Object> sources = new ArrayList<>();
+        List<Class<?>> sources = new ArrayList<>();
         sources.add(WebApplication.class);
         if (source != null) {
             sources.add(source);
@@ -131,7 +132,7 @@ public class WebApplication {
             log.warn("jersey被禁用，将采用springMVC");
         }
 
-        SpringApplication application = new SpringApplication(sources.toArray(new Object[0]));
+        SpringApplication application = new SpringApplication(sources.toArray(new Class<?>[0]));
         //Spring配置
         application.setDefaultProperties(WebApplication.sysProp.getProperties());
         return application.run(args);
@@ -148,11 +149,10 @@ public class WebApplication {
      * @return 嵌入式web容器工厂
      */
     @Bean
-    EmbeddedServletContainerFactory embeddedServletContainerFactory(SysProp sysProp) {
-        ConfigurableEmbeddedServletContainer factory = sysProp
-            .getConfigurableEmbeddedServletContainer();
+    ServletWebServerFactory embeddedServletContainerFactory(SysProp sysProp) {
+        ServletWebServerFactory factory = sysProp.getConfigurableEmbeddedServletContainer();
         if (factory == null) {
-            for (Class<? extends ConfigurableEmbeddedServletContainer> clazz : embeddedServletContainerClass) {
+            for (Class<? extends ServletWebServerFactory> clazz : embeddedServletContainerClass) {
                 try {
                     factory = clazz.newInstance();
                     break;
@@ -164,8 +164,13 @@ public class WebApplication {
         if (factory == null) {
             throw new RuntimeException("没有合适的嵌入式web容器，请添加至少一种嵌入式web容器");
         }
-        //设置doc root，spring-boot只能在打包后找到，在IDE中直接运行时找不到
-        factory.setDocumentRoot(DocumentRootHelper.getValidDocumentRoot());
-        return (EmbeddedServletContainerFactory) factory;
+
+        if (factory instanceof ConfigurableServletWebServerFactory) {
+            //设置doc root，spring-boot只能在打包后找到，在IDE中直接运行时找不到
+            ((ConfigurableServletWebServerFactory) factory)
+                .setDocumentRoot(DocumentRootHelper.getValidDocumentRoot());
+        }
+
+        return factory;
     }
 }

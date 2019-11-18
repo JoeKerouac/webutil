@@ -50,6 +50,7 @@ public class App {
         //开启jersey
         prop.setDisableJersey(!jersey);
         prop.setPort(port);
+        prop.setRoot("custom/test");
         //提供一个用户身份认证
         prop.enableAuthentication(session -> {
             User user = new User();
@@ -57,9 +58,9 @@ public class App {
             return user;
         });
         ResourceType type = jersey ? ResourceType.JERSEY : ResourceType.SPRING;
-        try (ConfigurableApplicationContext context = WebApplication.runWeb(App.class, prop,
+        try (ConfigurableApplicationContext ignored = WebApplication.runWeb(App.class, prop,
             null)) {
-            ResourceFactory factory = new ResourceFactory("http://127.0.0.1:" + port, type);
+            ResourceFactory factory = new ResourceFactory(String.format("http://127.0.0.1:%s/custom/test", port), type);
             Api api = factory.build(clazz);
             Assert.assertEquals("接口返回与预期不符", "hello", api.hello());
         }

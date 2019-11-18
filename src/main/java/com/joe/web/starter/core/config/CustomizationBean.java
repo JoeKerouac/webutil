@@ -1,7 +1,7 @@
 package com.joe.web.starter.core.config;
 
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.stereotype.Component;
 
 import com.joe.utils.common.string.StringUtils;
@@ -17,7 +17,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class CustomizationBean implements EmbeddedServletContainerCustomizer {
+public class CustomizationBean implements
+                               WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
     private SysProp prop;
 
     public CustomizationBean(SysProp prop) {
@@ -25,13 +26,19 @@ public class CustomizationBean implements EmbeddedServletContainerCustomizer {
     }
 
     @Override
-    public void customize(ConfigurableEmbeddedServletContainer container) {
-        String root = prop.getRoot();
-        if (!StringUtils.isEmpty(root) && !"/".equals(root)) {
-            container.setContextPath(root);
-        } else {
+    public void customize(ConfigurableServletWebServerFactory factory) {
+        String root = prop.getRoot().trim();
+
+        if (StringUtils.isEmpty(root) || "/".equals(root)) {
             root = "/";
         }
+
+        root = StringUtils.trim(root, "/");
+        if (!root.startsWith("/")) {
+            root = "/" + root;
+        }
+
+        factory.setContextPath(root);
         log.debug("项目根路径为：[{}]，端口号为：[{}]", root);
     }
 }
