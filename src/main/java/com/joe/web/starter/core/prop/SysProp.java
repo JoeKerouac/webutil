@@ -4,8 +4,6 @@ import java.util.Properties;
 
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 
-import com.joe.web.starter.core.spi.SecureContext;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -99,12 +97,6 @@ public class SysProp {
     private ServletWebServerFactory configurableEmbeddedServletContainer;
 
     /**
-     * 安全上下文，如果要启动权限拦截那么需要通过enableAuthentication方法设置该值，并且需要启用jersey
-     */
-    @Getter
-    private SecureContext secureContext;
-
-    /**
      * spring系统配置，优先级低于配置文件
      */
     private final Properties properties;
@@ -139,18 +131,5 @@ public class SysProp {
      */
     public void allowJspReload() {
         properties.put("server.jsp-servlet.init-parameters.development", true);
-    }
-
-    /**
-     * 启用权限拦截
-     *
-     * @param context
-     *            安全上下文，用户自己实现
-     */
-    public void enableAuthentication(SecureContext context) {
-        if (context == null) {
-            throw new NullPointerException("安全上下文不能为null");
-        }
-        this.secureContext = context;
     }
 }

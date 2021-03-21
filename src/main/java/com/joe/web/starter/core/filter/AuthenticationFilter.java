@@ -1,6 +1,7 @@
 package com.joe.web.starter.core.filter;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
@@ -13,6 +14,7 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.joe.web.starter.core.prop.SysProp;
 import com.joe.web.starter.core.secure.AppSecurityContext;
@@ -35,14 +37,24 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     private HttpServletRequest request;
 
     @Autowired
-    private SysProp            prop;
+    private SysProp prop;
 
-    private SecureContext      context;
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    private SecureContext context;
 
     @PostConstruct
     public void init() {
         log.info("初始化权限验证拦截器");
-        this.context = prop.getSecureContext();
+        Collection<SecureContext> values = applicationContext.getBeansOfType(SecureContext.class).values();
+        if (!values.isEmpty()) {
+            if (values.size() > 1) {
+                throw new IllegalStateException("不支持注入多个SecureContext");
+            } else {
+                this.context = values.stream().findFirst().get();
+            }
+        }
         log.info("权限验证拦截器初始化完毕");
     }
 
