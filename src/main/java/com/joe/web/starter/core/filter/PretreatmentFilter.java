@@ -34,33 +34,36 @@ import com.joe.web.starter.core.prop.SysProp;
 @PreMatching
 @Priority(Integer.MIN_VALUE)
 public class PretreatmentFilter implements ContainerRequestFilter, ContainerResponseFilter {
-    private static final Logger     logger = LoggerFactory.getLogger("Statistics");
-    private static final JsonParser JSON   = JsonParser.getInstance();
-    private static final String     format = "yyyy-MM-dd HH:mm:ss SSS";
+    private static final Logger logger = LoggerFactory.getLogger("Statistics");
+    private static final JsonParser JSON = JsonParser.getInstance();
+    private static final String format = "yyyy-MM-dd HH:mm:ss SSS";
+
     @Context
-    private HttpServletRequest      httpServletRequest;
+    private HttpServletRequest httpServletRequest;
+
     /**
      * 最大读取数量
      */
-    private int                     maxReadSize;
+    private int maxReadSize;
+
     @Context
-    private HttpServletResponse     response;
+    private HttpServletResponse response;
+
     @Autowired
-    private SysProp                 prop;
+    private SysProp prop;
 
     /**
      * 初始化
      */
     @PostConstruct
     public void init() {
-        this.maxReadSize = prop.getMaxReadSize() <= 0 ? SysProp.DEFAULT_MAX_SIZE
-            : prop.getMaxReadSize();
+        this.maxReadSize = prop.getMaxReadSize() <= 0 ? SysProp.DEFAULT_MAX_SIZE : prop.getMaxReadSize();
     }
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        //创建接口请求信息
-        ContainerRequest request = (ContainerRequest) requestContext;
+        // 创建接口请求信息
+        ContainerRequest request = (ContainerRequest)requestContext;
         ExtendedUriInfo uriInfo = request.getUriInfo();
         InterfaceInfo info = new InterfaceInfo();
         info.setBeginTime(DateUtil.getFormatDate(format, new Date()));
@@ -71,19 +74,19 @@ public class PretreatmentFilter implements ContainerRequestFilter, ContainerResp
         requestContext.setProperty("InterfaceInfo", info);
 
         logger.info("接收到请求，请求方法为：" + info.getMethod() + "，请求地址为：" + info.getPath() + "，请求接口为："
-                    + info.getRealRequestAddr() + "，开始处理");
+            + info.getRealRequestAddr() + "，开始处理");
         logRequestInfo(requestContext);
     }
 
     @Override
-    public void filter(ContainerRequestContext requestContext,
-                       ContainerResponseContext responseContext) throws IOException {
-        //完善接口请求信息
-        InterfaceInfo info = (InterfaceInfo) requestContext.getProperty("InterfaceInfo");
+    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
+        throws IOException {
+        // 完善接口请求信息
+        InterfaceInfo info = (InterfaceInfo)requestContext.getProperty("InterfaceInfo");
         info.setFinish(true);
         info.setEndTime(DateUtil.getFormatDate(format, new Date()));
-        int consume = (int) (DateUtil.parse(info.getEndTime(), format).getTime()
-                             - DateUtil.parse(info.getBeginTime(), format).getTime());
+        int consume = (int)(DateUtil.parse(info.getEndTime(), format).getTime()
+            - DateUtil.parse(info.getBeginTime(), format).getTime());
         info.setConsumeTime(consume);
         Object obj = responseContext.getEntity();
         logger.debug("响应结果是：" + JSON.toJson(obj));
@@ -93,8 +96,10 @@ public class PretreatmentFilter implements ContainerRequestFilter, ContainerResp
     /**
      * 读取请求中的信息（最大读取{@link #maxReadSize}字节）
      *
-     * @param requestContext 请求上下文
-     * @throws IOException IO异常
+     * @param requestContext
+     *            请求上下文
+     * @throws IOException
+     *             IO异常
      */
     private void logRequestInfo(ContainerRequestContext requestContext) throws IOException {
         if (requestContext.getMethod().equals("GET")) {
