@@ -4,6 +4,7 @@ import static com.joe.pay.PayConst.*;
 import static com.joe.utils.validation.ValidatorUtil.validate;
 
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -210,7 +211,7 @@ public class AliPayService extends AbstractPayService {
         publicParam.setAppId(appid);
         publicParam.setMethod(method);
         publicParam.setFormat("JSON");
-        publicParam.setTimestamp(DateUtil.getFormatDate(DateUtil.BASE));
+        publicParam.setTimestamp(DateUtil.getFormatDate(DateUtil.BASE, new Date()));
         publicParam.setNotifyUrl(notifyUrl);
         return publicParam;
     }

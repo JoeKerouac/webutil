@@ -10,6 +10,8 @@ import com.joe.utils.common.DateUtil;
 import com.joe.utils.common.Tools;
 import com.joe.utils.test.BaseTest;
 
+import java.util.Date;
+
 /**
  * 支付测试
  *
@@ -142,7 +144,7 @@ public class PayServiceTest extends BaseTest {
         payRequest.setOutTradeNo(Tools.createUUID());
         payRequest.setBody("天天爱消除-游戏充值");
         payRequest.setSubject("天天爱消除-游戏充值");
-        payRequest.setCreateTime(DateUtil.getFormatDate(DateUtil.BASE));
+        payRequest.setCreateTime(DateUtil.getFormatDate(DateUtil.BASE, new Date()));
         payRequest.setTotalAmount(100 * 10);
         payRequest.setIp("106.120.141.226");
         return payRequest;

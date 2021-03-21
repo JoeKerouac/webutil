@@ -35,11 +35,16 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableAutoConfiguration
 public class WebApplication {
+
     /**
      * 嵌入式web容器的class集合
      */
     private static final Class<? extends ServletWebServerFactory>[] embeddedServletContainerClass;
-    private static SysProp                                          sysProp;
+
+    /**
+     * 系统配置
+     */
+    private static SysProp sysProp;
 
     static {
         embeddedServletContainerClass = new Class[3];
@@ -52,7 +57,8 @@ public class WebApplication {
     /**
      * 运行web程序（依赖：需要一个名叫Statistics的logger用来打印统计信息）
      *
-     * @param source 用户主类
+     * @param source
+     *            用户主类
      * @return ConfigurableApplicationContext
      */
     public static ConfigurableApplicationContext runWeb(Class<?> source) {
@@ -62,8 +68,10 @@ public class WebApplication {
     /**
      * 运行web程序（依赖：需要一个名叫Statistics的logger用来打印统计信息）
      *
-     * @param source 用户主类
-     * @param prop   系统配置
+     * @param source
+     *            用户主类
+     * @param prop
+     *            系统配置
      * @return ConfigurableApplicationContext
      */
     public static ConfigurableApplicationContext runWeb(Class<?> source, SysProp prop) {
@@ -73,8 +81,10 @@ public class WebApplication {
     /**
      * 运行web程序（依赖：需要一个名叫Statistics的logger用来打印统计信息）
      *
-     * @param source 用户主类
-     * @param args   参数
+     * @param source
+     *            用户主类
+     * @param args
+     *            参数
      * @return ConfigurableApplicationContext
      */
     public static ConfigurableApplicationContext runWeb(Class<?> source, String[] args) {
@@ -84,13 +94,15 @@ public class WebApplication {
     /**
      * 运行web程序（依赖：需要一个名叫Statistics的logger用来打印统计信息）
      *
-     * @param source 用户主类
-     * @param prop   系统配置
-     * @param args   参数
+     * @param source
+     *            用户主类
+     * @param prop
+     *            系统配置
+     * @param args
+     *            参数
      * @return ConfigurableApplicationContext
      */
-    public static ConfigurableApplicationContext runWeb(Class<?> source, SysProp prop,
-                                                        String[] args) {
+    public static ConfigurableApplicationContext runWeb(Class<?> source, SysProp prop, String[] args) {
         WebApplication.sysProp = prop;
 
         List<Class<?>> sources = new ArrayList<>();
@@ -133,7 +145,7 @@ public class WebApplication {
         }
 
         SpringApplication application = new SpringApplication(sources.toArray(new Class<?>[0]));
-        //Spring配置
+        // Spring配置
         application.setDefaultProperties(WebApplication.sysProp.getProperties());
         return application.run(args);
     }
@@ -157,6 +169,7 @@ public class WebApplication {
                     factory = clazz.newInstance();
                     break;
                 } catch (Throwable e) {
+                    log.info("构建ServletWebServerFactory[{}]失败", clazz);
                 }
             }
         }
@@ -166,9 +179,8 @@ public class WebApplication {
         }
 
         if (factory instanceof ConfigurableServletWebServerFactory) {
-            //设置doc root，spring-boot只能在打包后找到，在IDE中直接运行时找不到
-            ((ConfigurableServletWebServerFactory) factory)
-                .setDocumentRoot(DocumentRootHelper.getValidDocumentRoot());
+            // 设置doc root，spring-boot只能在打包后找到，在IDE中直接运行时找不到
+            ((ConfigurableServletWebServerFactory)factory).setDocumentRoot(DocumentRootHelper.getValidDocumentRoot());
         }
 
         return factory;

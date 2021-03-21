@@ -39,6 +39,6 @@ public class CustomizationBean implements
         }
 
         factory.setContextPath(root);
-        log.debug("项目根路径为：[{}]，端口号为：[{}]", root);
+        log.debug("项目根路径为：[{}]", root);
     }
 }

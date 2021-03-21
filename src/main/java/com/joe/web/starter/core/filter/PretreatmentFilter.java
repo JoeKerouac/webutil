@@ -3,6 +3,7 @@ package com.joe.web.starter.core.filter;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Priority;
@@ -62,7 +63,7 @@ public class PretreatmentFilter implements ContainerRequestFilter, ContainerResp
         ContainerRequest request = (ContainerRequest) requestContext;
         ExtendedUriInfo uriInfo = request.getUriInfo();
         InterfaceInfo info = new InterfaceInfo();
-        info.setBeginTime(DateUtil.getFormatDate(format));
+        info.setBeginTime(DateUtil.getFormatDate(format, new Date()));
         info.setRealRequestAddr(uriInfo.getPath());
         info.setIp(httpServletRequest.getRemoteAddr());
         info.setMethod(requestContext.getMethod());
@@ -80,7 +81,7 @@ public class PretreatmentFilter implements ContainerRequestFilter, ContainerResp
         //完善接口请求信息
         InterfaceInfo info = (InterfaceInfo) requestContext.getProperty("InterfaceInfo");
         info.setFinish(true);
-        info.setEndTime(DateUtil.getFormatDate(format));
+        info.setEndTime(DateUtil.getFormatDate(format, new Date()));
         int consume = (int) (DateUtil.parse(info.getEndTime(), format).getTime()
                              - DateUtil.parse(info.getBeginTime(), format).getTime());
         info.setConsumeTime(consume);

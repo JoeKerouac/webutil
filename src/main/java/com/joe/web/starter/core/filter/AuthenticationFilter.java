@@ -30,10 +30,13 @@ import lombok.extern.slf4j.Slf4j;
 @PreMatching
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
+
     @Context
     private HttpServletRequest request;
+
     @Autowired
     private SysProp            prop;
+
     private SecureContext      context;
 
     @PostConstruct
