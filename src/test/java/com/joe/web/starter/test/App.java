@@ -5,6 +5,7 @@ import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.joe.http.ws.ResourceFactory;
@@ -14,6 +15,7 @@ import com.joe.web.starter.core.constant.SpringConst;
 import com.joe.web.starter.core.prop.SysProp;
 import com.joe.web.starter.core.secure.entity.Role;
 import com.joe.web.starter.core.secure.entity.User;
+import com.joe.web.starter.core.spi.SecureContext;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,17 +59,20 @@ public class App {
         prop.addProperties(SpringConst.Prop.SERVER_PORT, port);
         prop.addProperties(SpringConst.Prop.CONTEXT_PATH, "/custom/test");
 
-        // 提供一个用户身份认证
-        prop.enableAuthentication(session -> {
-            User user = new User();
-            user.setRoles(Collections.singleton(new Role("123", "user")));
-            return user;
-        });
         ResourceType type = jersey ? ResourceType.JERSEY : ResourceType.SPRING;
         try (ConfigurableApplicationContext ignored = WebApplication.runWeb(App.class, prop, null)) {
             ResourceFactory factory = new ResourceFactory(String.format("http://127.0.0.1:%s/custom/test", port), type);
             Api api = factory.build(clazz);
             Assert.assertEquals("接口返回与预期不符", "hello", api.hello());
         }
+    }
+
+    @Bean
+    public SecureContext secureContext() {
+        return session -> {
+            User user = new User();
+            user.setRoles(Collections.singleton(new Role("123", "user")));
+            return user;
+        };
     }
 }
