@@ -19,6 +19,7 @@ import com.joe.web.starter.core.config.ScanConfig;
  * @version 2018.02.02 11:03
  */
 public class JerseySpringScanner extends ClassPathBeanDefinitionScanner {
+
     JerseySpringScanner(BeanDefinitionRegistry registry) {
         super(registry);
     }
@@ -26,8 +27,7 @@ public class JerseySpringScanner extends ClassPathBeanDefinitionScanner {
     @Override
     public void registerDefaultFilters() {
         // 添加自定义类型，将以下注解加入扫描
-        ScanConfig.JERSEY_COMPONENT.parallelStream().map(AnnotationTypeFilter::new)
-            .forEach(this::addIncludeFilter);
+        ScanConfig.JERSEY_COMPONENT.parallelStream().map(AnnotationTypeFilter::new).forEach(this::addIncludeFilter);
     }
 
     @Override

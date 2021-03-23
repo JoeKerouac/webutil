@@ -73,7 +73,7 @@ public class SysProp {
      */
     @Getter
     @Setter
-    private String allowHeaders = "Accept, Origin, XRequestedWith, Content-Type, LastModified";
+    private String allowHeaders = "*";
 
     /**
      * 开启流量统计时最多打印多少byte内容，当小于等于0时使用默认值{@link #DEFAULT_MAX_SIZE}

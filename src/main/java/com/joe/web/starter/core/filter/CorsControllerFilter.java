@@ -18,12 +18,13 @@ import com.joe.web.starter.core.prop.SysProp;
  * @version 2018.02.09 13:39
  */
 public class CorsControllerFilter implements ContainerResponseFilter {
+
     @Autowired
     private SysProp prop;
 
     @Override
-    public void filter(ContainerRequestContext requestContext,
-                       ContainerResponseContext responseContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
+        throws IOException {
         MultivaluedMap<String, Object> headers = responseContext.getHeaders();
         headers.add("Access-Control-Allow-Origin", prop.getAllowOrigin());
         headers.add("Access-Control-Allow-Methods", prop.getAllowMethods());
