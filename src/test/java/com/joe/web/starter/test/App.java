@@ -11,10 +11,10 @@ import org.springframework.context.annotation.ComponentScan;
 import com.joe.http.ws.ResourceFactory;
 import com.joe.http.ws.core.ResourceType;
 import com.joe.web.starter.WebApplication;
-import com.joe.web.starter.core.constant.SpringConst;
+import com.joe.web.starter.core.spring.constant.SpringConst;
 import com.joe.web.starter.core.prop.SysProp;
-import com.joe.web.starter.core.secure.entity.Role;
-import com.joe.web.starter.core.secure.entity.User;
+import com.joe.web.starter.core.model.secure.Role;
+import com.joe.web.starter.core.model.secure.User;
 import com.joe.web.starter.core.spi.SecureContext;
 
 import lombok.extern.slf4j.Slf4j;
@@ -69,8 +69,8 @@ public class App {
 
     @Bean
     public SecureContext secureContext() {
-        return session -> {
-            User user = new User();
+        return request -> {
+            User user = new User("123", "testUser");
             user.setRoles(Collections.singleton(new Role("123", "user")));
             return user;
         };

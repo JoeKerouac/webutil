@@ -1,5 +1,8 @@
 package com.joe.web.starter.core.prop;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -48,32 +51,39 @@ public class SysProp {
     private boolean enableCors = false;
 
     /**
-     * 跨域配置，只有在enableCors为true时才生效
+     * 是否开启权限校验，如果开启，需要用户自行注册bean{@link com.joe.web.starter.core.spi.SecureContext}
      */
     @Getter
     @Setter
-    private String allowOrigin = "*";
+    private boolean enableSecurity = false;
 
     /**
      * 跨域配置，只有在enableCors为true时才生效
      */
     @Getter
     @Setter
-    private String allowMethods = "POST, GET, OPTIONS, DELETE";
+    private List<String> allowOrigins = Collections.singletonList("*");
 
     /**
      * 跨域配置，只有在enableCors为true时才生效
      */
     @Getter
     @Setter
-    private String maxAge = "3600";
+    private List<String> allowHeaders = Collections.singletonList("*");
 
     /**
      * 跨域配置，只有在enableCors为true时才生效
      */
     @Getter
     @Setter
-    private String allowHeaders = "*";
+    private List<String> allowMethods = Arrays.asList("POST", "GET", "OPTIONS", "DELETE");
+
+    /**
+     * 跨域配置，只有在enableCors为true时才生效
+     */
+    @Getter
+    @Setter
+    private long maxAge = 3600;
 
     /**
      * 开启流量统计时最多打印多少byte内容，当小于等于0时使用默认值{@link #DEFAULT_MAX_SIZE}

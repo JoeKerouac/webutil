@@ -3,6 +3,7 @@ package com.joe.web.starter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
@@ -16,11 +17,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import com.joe.utils.ext.DocumentRootHelper;
-import com.joe.web.starter.core.config.JerseyConfig;
-import com.joe.web.starter.core.ext.JerseySpringBeanScannerConfigurer;
-import com.joe.web.starter.core.filter.CorsControllerFilter;
-import com.joe.web.starter.core.filter.SystemExceptionMapper;
+import com.joe.web.starter.core.jersey.bootstrap.JerseyConfig;
+import com.joe.web.starter.core.jersey.config.JerseySpringConfig;
+import com.joe.web.starter.core.jersey.filter.CorsControllerFilter;
+import com.joe.web.starter.core.jersey.filter.SystemExceptionMapper;
 import com.joe.web.starter.core.prop.SysProp;
+import com.joe.web.starter.core.spring.bootstrap.SpringConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -125,23 +127,26 @@ public class WebApplication {
         if (!WebApplication.sysProp.isDisableJersey()) {
             log.info("启用jersey");
             sources.add(JerseyConfig.class);
-            sources.add(JerseySpringBeanScannerConfigurer.class);
+
+            if (WebApplication.sysProp.isEnableSecurity()) {
+                log.debug("开启安全配置");
+                JerseySpringConfig.registerComponent(RolesAllowedDynamicFeature.class);
+            }
 
             if (WebApplication.sysProp.isEnableCors()) {
                 log.debug("允许跨域，往spring注册跨域控制器bean");
-                sources.add(CorsControllerFilter.class);
-                JerseyConfig.registerComponent(CorsControllerFilter.class);
+                JerseySpringConfig.registerComponent(CorsControllerFilter.class);
             }
 
             if (!WebApplication.sysProp.isDisableExceptionMapper()) {
                 log.info("当前系统允许异常屏蔽，注册spring bean");
-                sources.add(SystemExceptionMapper.class);
-                JerseyConfig.registerComponent(SystemExceptionMapper.class);
+                JerseySpringConfig.registerComponent(SystemExceptionMapper.class);
             } else {
                 log.warn("当前系统不允许异常屏蔽，异常信息将直接发送到前台");
             }
         } else {
             log.warn("jersey被禁用，将采用springMVC");
+            sources.add(SpringConfig.class);
         }
 
         SpringApplication application = new SpringApplication(sources.toArray(new Class<?>[0]));

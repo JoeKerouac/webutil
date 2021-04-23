@@ -68,13 +68,14 @@ public class JerseyApi {
     }
 }
 ```
+
 ```java
 package com.joe.web.starter.test;
 
 import com.joe.web.starter.WebApplication;
 import com.joe.web.starter.core.prop.SysProp;
-import com.joe.web.starter.core.secure.entity.Role;
-import com.joe.web.starter.core.secure.entity.User;
+import com.joe.web.starter.core.model.secure.Role;
+import com.joe.web.starter.core.model.secure.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 
